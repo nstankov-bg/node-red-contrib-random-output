@@ -2,11 +2,8 @@ module.exports = function(RED) {
   function RandomOutputNode(config) {
     RED.nodes.createNode(this, config)
       let node = this;
-      //Elect a single node for X time
-      let timeout = config.time;
-
-
-
+      //Elect a single node for 30 seconds.
+      let electTime = 30;
 
       node.weights = [];
       for(let weight of config.weights){
@@ -19,32 +16,41 @@ module.exports = function(RED) {
 
       const numberOfOutputs = config.outputs
       node.weights = config.useWeights ? node.weights.slice(0, numberOfOutputs) : Array(numberOfOutputs).fill(1);
+      //For each numberOfOutputs, in numberOfOutputs, add lastElected as a parameter.
+      node.lastElected = [];
 
       node.on('input', function(msg) {
+        
         let output = new Array(numberOfOutputs);
 
-        let weightSum = node.weights.reduce((a, b) => a + b, 0);
-        if(weightSum <= 0){
-          node.weights.fill(0, 1);
-          weightSum = numberOfOutputs;
-        }
-
-        const randVal = Math.random() * weightSum;
-        let weightAggregate = 0;
-        let chosen;
-        for(let outputNum = 0; outputNum < numberOfOutputs; outputNum++){
-          weightAggregate += node.weights[outputNum];
-          if(randVal < weightAggregate){
-            //Check if this node was elected in the last "timeout" seconds.
-            if(node.lastElected[outputNum] && (Date.now() - node.lastElected[outputNum]) < timeout){
-              //If so, skip this output and try again.
-              continue;
+        //Check if there is an elected node.
+        isThereElectedNode = context.get("lastElectedNode");
+        if(isThereElectedNode){
+          //If there is, check if it was elected more than 30s ago.
+          let lastElectedTime = context.get("lastElectedTime");
+          if(lastElectedTime){
+            let timeDiff = Date.now() - lastElectedTime;
+            if(timeDiff > electTime * 1000){
+              let weightSum = node.weights.reduce((a, b) => a + b, 0);
+              if(weightSum <= 0){
+                node.weights.fill(0, 1);
+                weightSum = numberOfOutputs;
+              }
+              const randVal = Math.random() * weightSum;
+              let weightAggregate = 0;
+              let chosen;
+              for(let outputNum = 0; outputNum < numberOfOutputs; outputNum++){
+                weightAggregate += node.weights[outputNum];
+                if(randVal < weightAggregate){
+                  //Elect this output.
+                  chosen = outputNum;
+                  context.set("lastElectedNode", outputNum);
+                  context.set("lastElectedTime", Date.now());
+                }
+              }
             }
-            chosen = outputNum;
-            break;
           }
         }
-
         output[chosen] = msg;
         node.send(output)
       });
