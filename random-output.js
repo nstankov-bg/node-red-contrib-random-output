@@ -25,10 +25,14 @@ module.exports = function (RED) {
 
     node.on("input", function (msg) {
       let output = new Array(numberOfOutputs);
+      console.log(output);
+
       //Check if there is an elected node.
       isThereElectedNode = context.get("lastElectedNode");
+      console.log(isThereElectedNode);
       //If there is, check if it was elected more than 30s ago.
       let lastElectedTime = context.get("lastElectedTime");
+      console.log(lastElectedTime);
 
       //If isThereElectedNode & isThereElectedNode is not empty
       if (isThereElectedNode && isThereElectedNode !== "") {
