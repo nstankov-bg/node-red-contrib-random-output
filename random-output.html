@@ -1,5 +1,5 @@
 <script type="text/javascript">
-  RED.nodes.registerType('random-output', {
+  RED.nodes.registerType('random-output-advanced', {
     category: 'function',
     color: '#E2D96E',
     defaults: {
@@ -11,7 +11,7 @@
     inputs:1,
     icon: "font-awesome/fa-random",
     label: function() {
-      return this.name || "random-output"
+      return this.name || "random-output-advanced"
     },
     oneditprepare: function () {
       node = this;
@@ -57,7 +57,7 @@
 
 </script>
 
-<script type="text/html" data-template-name="random-output">
+<script type="text/html" data-template-name="random-output-advanced">
   <div class="form-row">
       <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
       <input type="text" id="node-input-name" placeholder="Name">
@@ -70,13 +70,14 @@
     <label>&nbsp;</label>
     <input type="checkbox" id="node-input-useWeights" style="display: inline-block; width: auto; vertical-align: top;">
     <label for="node-input-useWeights" style="width: 70%;">Use Weights</label>
+    <label for="node-input-useWeights" style="width: 70%;">Use Timer</label>
   </div>
   <div class="form-row node-weights-field"><i class="fa fa-balance-scale"></i> Weights</div>
   <div id="weights-container" class="node-weights-field"></div>
 
 </script>
 
-<script type="text/html" data-help-name="random-output">
+<script type="text/html" data-help-name="random-output-advanced">
   <p>Routes a received msg to a random output. By default all outputs are equally likely but this can be adjusted by specifying weights.</p>
 
   <h3>Options</h3>
