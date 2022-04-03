@@ -2,6 +2,10 @@ module.exports = function (RED) {
   function RandomOutputNode(config) {
     RED.nodes.createNode(this, config);
     let node = this;
+    // Access the node's context object
+    // var nodeContext = this.context();
+    // var flowContext = this.context().flow;
+    var context = this.context().global;
     //Elect a single node for 30 seconds.
     let electTime = 30;
 
