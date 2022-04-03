@@ -3,9 +3,9 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
     let node = this;
     // Access the node's context object
-    // var nodeContext = this.context();
+    var context = this.context();
     // var flowContext = this.context().flow;
-    var context = this.context().global;
+    // var context = this.context().global;
     //Elect a single node for 30 seconds.
     let electTime = 30;
 
