@@ -18,18 +18,38 @@ module.exports = function (RED) {
     node.weights = config.useWeights
       ? node.weights.slice(0, numberOfOutputs)
       : Array(numberOfOutputs).fill(1);
-    //For each numberOfOutputs, in numberOfOutputs, add lastElected as a parameter.
-    node.lastElected = [];
 
     node.on("input", function (msg) {
       let output = new Array(numberOfOutputs);
-
       //Check if there is an elected node.
       isThereElectedNode = context.get("lastElectedNode");
       //If there is, check if it was elected more than 30s ago.
       let lastElectedTime = context.get("lastElectedTime");
-      let timeDiff = Date.now() - lastElectedTime;
-      if (timeDiff > electTime * 1000) {
+
+      if (isThereElectedNode) {
+        if (lastElectedTime) {
+          let timeDiff = Date.now() - lastElectedTime;
+          if (timeDiff > electTime * 1000) {
+            let weightSum = node.weights.reduce((a, b) => a + b, 0);
+            if (weightSum <= 0) {
+              node.weights.fill(0, 1);
+              weightSum = numberOfOutputs;
+            }
+            const randVal = Math.random() * weightSum;
+            let weightAggregate = 0;
+            let chosen;
+            for (let outputNum = 0; outputNum < numberOfOutputs; outputNum++) {
+              weightAggregate += node.weights[outputNum];
+              if (randVal < weightAggregate) {
+                //Elect this output.
+                chosen = outputNum;
+                context.set("lastElectedNode", outputNum);
+                context.set("lastElectedTime", Date.now());
+              }
+            }
+          }
+        }
+      } else {
         let weightSum = node.weights.reduce((a, b) => a + b, 0);
         if (weightSum <= 0) {
           node.weights.fill(0, 1);
