@@ -62,8 +62,6 @@ module.exports = function (RED) {
                 Date.now() + 120000
               );
 
-              node.log("lastElectedTimeNode" + context.get('lastElectedNode'));
-
               node.log(
                 "node-red-contrib: Elected node " +
                   context.get("lastElectedNode") +
@@ -96,6 +94,8 @@ module.exports = function (RED) {
         node.send(output);
       }
     });
+    
+    node.log("lastElectedTimeNode" + context.get('lastElectedNode'));
   }
 
   RED.nodes.registerType("random-output-advanced", RandomOutputNode);
