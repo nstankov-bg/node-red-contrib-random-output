@@ -28,7 +28,7 @@ module.exports = function (RED) {
       console.log(output);
 
       //Check if there is an elected node.
-      isThereElectedNode = context.get("lastElectedNode");
+      let isThereElectedNode = context.get("lastElectedNode");
       console.log(isThereElectedNode);
       //If there is, check if it was elected more than 30s ago.
       let lastElectedTime = context.get("lastElectedTime");
