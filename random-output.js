@@ -6,26 +6,24 @@ function checkIfNodeIsElected(context, node, outputNum) {
   }
 }
 
-function checkReElectionEligibility(context, node, outputNum) {
-
-}
+function checkReElectionEligibility(context, node, outputNum) {}
 
 function electNode(enabled, context, node, outputNum) {
-  if (enabled){
-  context.set("lastElectedNode", outputNum);
-  context.set("lastElectedTime", Date.now());
-  //2m minutes to expire
-  context.set(
-    "lastElectedTimeNode" + context.get('lastElectedNode'),
-    Date.now() + 120000
-  );
+  if (enabled) {
+    context.set("lastElectedNode", outputNum);
+    context.set("lastElectedTime", Date.now());
+    //2m minutes to expire
+    context.set(
+      "lastElectedTimeNode" + context.get("lastElectedNode"),
+      Date.now() + 120000
+    );
 
-  node.log(
-    "node-red-contrib: Elected node " +
-      context.get("lastElectedNode") +
-      " at " +
-      context.get("lastElectedTime")
-  );
+    node.log(
+      "node-red-contrib: Elected node " +
+        context.get("lastElectedNode") +
+        " at " +
+        context.get("lastElectedTime")
+    );
   }
 }
 
@@ -64,20 +62,8 @@ module.exports = function (RED) {
       const randVal = Math.random() * weightSum;
       let weightAggregate = 0;
       let chosen;
-      if (
-        context.get("lastElectedNode") !== ""
-      ) {
-        //Check if lastElectedTime is less than 30s ago.
-        //30s in unix time
+      if (context.get("lastElectedNode") !== "") {
         if (context.get("lastElectedTime") > Date.now() - 30000) {
-          node.log(
-            "node-red-contrib: Last node elected was " +
-              context.get("lastElectedNode") +
-              " expiration at " +
-              context.get("lastElectedTime")
-          );
-          node.log("node-red-contrib: lastElectedTimeNode: " + context.get("lastElectedTimeNode" + context.get('lastElectedNode')));
-          chosen = context.get("lastElectedNode");
           output[chosen] = msg;
           node.send(output);
         } else {
