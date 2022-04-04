@@ -4,9 +4,9 @@ module.exports = function (RED) {
     let node = this;
     let context = this.context();
     //Check if there is an elected node.
-    var lastElectedNode = context.get("lastElectedNode");
+    let lastElectedNode = context.get("lastElectedNode");
     //If there is, check if it was elected more than 30s ago.
-    var lastElectedTime = context.get("lastElectedTime");
+    let lastElectedTime = context.get("lastElectedTime");
     node.weights = [];
     for (let weight of config.weights) {
       weight = Number(weight);
@@ -70,12 +70,15 @@ module.exports = function (RED) {
         for (let outputNum = 0; outputNum < numberOfOutputs; outputNum++) {
           weightAggregate += node.weights[outputNum];
           if (randVal < weightAggregate) {
-            chosen = outputNum;
             context.set("lastElectedNode", outputNum);
             context.set("lastElectedTime", Date.now());
+            chosen = lastElectedNode;
             break;
           }
         }
+        node.log(
+          "node-red-contrib: No election was made. Using default else()."
+        );
         output[chosen] = msg;
         node.send(output);
       }
