@@ -45,7 +45,7 @@ module.exports = function (RED) {
               " expiration at " +
               context.get("lastElectedTime")
           );
-          node.log("node-red-contrib: lastElectedTimeNode: " + "lastElectedTimeNode" + context.get('lastElectedNode'));
+          node.log("node-red-contrib: lastElectedTimeNode: " + context.get("lastElectedTimeNode" + context.get('lastElectedNode')));
           chosen = context.get("lastElectedNode");
           output[chosen] = msg;
           node.send(output);
