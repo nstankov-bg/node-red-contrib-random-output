@@ -2,13 +2,13 @@ module.exports = function (RED) {
   function electNode(context, node, outputNum) {
     //Check if outputNum is eligible for re-election
     if (checkReelectionEligibility(context, outputNum, node) == true) {
-      context.set("lastElectedNode", outputNum);
+      context.set("lastcontext.get("lastElectedNode")", outputNum);
       context.set("lastElectedTime", Date.now());
       //2m minutes to expire
-      context.set("lastElectedTimeNode" + electedNode, Date.now() + 120000);
+      context.set("lastElectedTimeNode" + context.get("lastElectedNode"), Date.now() + 120000);
       node.log(
         "node-red-contrib: Elected node " +
-          electedNode +
+          context.get("lastElectedNode") +
           " at " +
           context.get("lastElectedTime")
       );
@@ -40,18 +40,15 @@ module.exports = function (RED) {
     let node = this;
     let context = this.context();
 
-    let electedNode = context.get("lastElectedNode");
-    let electedTime = context.get("lastElectedTime");
-
     const numberOfOutputs = config.outputs;
 
     node.on("input", function (msg) {
       let output = new Array(numberOfOutputs);
       let chosen;
-      if (electedNode !== "" && electedNode !== undefined) {
-        chosen = electedNode;
-        if (electedTime > Date.now() - 30000) {
-          chosen = electedNode;
+      if (context.get("lastElectedNode") !== "" && context.get("lastElectedNode") !== undefined) {
+        chosen = context.get("lastElectedNode");
+        if (context.get("lastElectedTime") > Date.now() - 30000 && context.get("lastElectedTime") !== undefined) {
+          chosen = context.get("lastElectedNode");
           output[chosen] = msg;
           node.send(output);
         }
@@ -60,7 +57,7 @@ module.exports = function (RED) {
           chosen = outputNum;
           electNode(context, node, outputNum);
         }
-        chosen = electedNode;
+        chosen = context.get("lastElectedNode");
         output[chosen] = msg;
         node.send(output);
       }
