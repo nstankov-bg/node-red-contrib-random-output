@@ -24,7 +24,8 @@ module.exports = function (RED) {
           context.get("lastElectedTime" + context.get("lastElectedNode"))
       );
     } else {
-      node.log(outputNum + " is not eligible for re-election");
+      node.log("node-red-contrib: Node " + outputNum + " will be eligable at" + context.get("lastElectedTime" + outputNum));
+      node.log("node-red-contrib: " + outputNum + " is not eligible for re-election");
       return false;
     }
   }
