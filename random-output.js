@@ -51,6 +51,14 @@ module.exports = function (RED) {
 
     node.on("input", function (msg) {
 
+      node.log('node-red-contrib: Random Output Node created');
+      node.log('node-red-contrib: Number of outputs: ' + numberOfOutputs);
+      if (context.get("lastElectedNode") !== undefined) {
+      node.log('node-red-contrib: Currently elected node: ' + context.get("lastElectedNode"));
+      node.log('node-red-contrib: Last elected time: ' + context.get("lastElectedTime"));
+      } else {
+        node.log('node-red-contrib: No node has been elected yet');
+      }
       
       let output = new Array(numberOfOutputs);
       let chosen;
@@ -77,12 +85,6 @@ module.exports = function (RED) {
         node.send(output);
       }
     });
-
-    node.log('node-red-contrib: Random Output Node created');
-    node.log('node-red-contrib: Number of outputs: ' + numberOfOutputs);
-    node.log('node-red-contrib: Currently elected node: ' + context.get("lastElectedNode"));
-    node.log('node-red-contrib: Last elected time: ' + context.get("lastElectedTime"));
-
   }
 
   RED.nodes.registerType("random-output-advanced", RandomOutputNode);
