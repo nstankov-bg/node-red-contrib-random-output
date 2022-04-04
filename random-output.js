@@ -1,7 +1,5 @@
 module.exports = function (RED) {
-  function electNode(enabled, node, outputNum) {
-    let context = this.context();
-
+  function electNode(enabled,context, node, outputNum) {
     if (enabled) {
       context.set("lastElectedNode", outputNum);
       context.set("lastElectedTime", Date.now());
@@ -60,7 +58,7 @@ module.exports = function (RED) {
             weightAggregate += node.weights[outputNum];
             if (randVal < weightAggregate) {
               chosen = outputNum;
-              electNode(true, node, outputNum);
+              electNode(true, context, node, outputNum);
               break;
             }
             chosen = context.get("lastElectedNode");
