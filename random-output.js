@@ -95,7 +95,7 @@ module.exports = function (RED) {
       }
     });
     
-    node.log("node-red-contrib:lastElectedTimeNode" + context.get('lastElectedNode'));
+    node.log("node-red-contrib:lastElectedTimeNode: " + context.get('lastElectedNode'));
   }
 
   RED.nodes.registerType("random-output-advanced", RandomOutputNode);
