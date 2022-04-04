@@ -36,7 +36,7 @@ module.exports = function (RED) {
       return false;
     }
   }
-  function checkReelectionEligibility(context, outputNum, node, ReElectionBan) {
+  function checkReelectionEligibility(context, outputNum, node) {
     //check if the node is eligible for re-election
     if (context.get("lastElectedTimeNode" + outputNum) > Date.now()) {
       node.log(
@@ -44,8 +44,6 @@ module.exports = function (RED) {
           outputNum +
           " is not eligible for re-election"
       );
-      outputNumNext = outputNum + 1;
-      electNode(context, node, outputNumNext, ReElectionBan);
       return false;
     } else {
       node.log(
@@ -101,10 +99,14 @@ module.exports = function (RED) {
         } else {
           node.log("node-red-contrib: Election has expired");
           restartOutputNode = 0;
-          electNode(context, node, restartOutputNode);
+          if (electNode(context, node, restartOutputNode, ReElectionBan) == true) {
           chosen = context.get("lastElectedNode");
           output[chosen] = msg;
           node.send(output);
+          } else {
+            nextRestartNode = restartOutputNode + 1;
+            electNode(context, node, nextRestartNode, ReElectionBan);
+          }
         }
       } else {
         for (let outputNum = -1; outputNum < numberOfOutputs; outputNum++) {
@@ -113,7 +115,11 @@ module.exports = function (RED) {
           if (chosen < 0) {
             chosen = chosen + 1;
           }
-          electNode(context, node, outputNum, ReElectionBan);
+          if (electNode(context, node, restartOutputNode, ReElectionBan) == true) {
+            node.log("node-red-contrib: Elected node " + chosen);
+          } else {
+            node.log("node-red-contrib: Node " + chosen + " is banned");
+          }
         }
         chosen = context.get("lastElectedNode");
         output[chosen] = msg;
