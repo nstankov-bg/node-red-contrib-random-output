@@ -58,7 +58,7 @@ module.exports = function (RED) {
               context.set("lastElectedTime", Date.now());
               //2m minutes to expire
               context.set(
-                "lastElectedTimeNode" + context.get(lastElectedNode),
+                "lastElectedTimeNode" + context.get('lastElectedNode'),
                 Date.now() + 120000
               );
 
