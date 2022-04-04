@@ -22,8 +22,10 @@ module.exports = function (RED) {
     context.get("lastElectedTimeNode" + outputNum);
     //check if the node is eligible for re-election
     if (context.get("lastElectedTimeNode" + outputNum) > Date.now()) {
+      node.log( "node-red-contrib: Node " + outputNum + " is eligible for re-election");
       return true;
     } else {
+      node.log( "node-red-contrib: Node " + outputNum + " is not eligible for re-election");
       return false;
     }
   }
