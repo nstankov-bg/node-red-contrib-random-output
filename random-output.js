@@ -1,6 +1,7 @@
 module.exports = function (RED) {
   function electNode(context, node, outputNum) {
     //Check if outputNum is eligible for re-election
+    node.log('Checking if output ' + outputNum + ' is eligible for re-election');
     if (checkReelectionEligibility(context, outputNum, node) == true) {
       context.set("lastElectedNode", outputNum);
       context.set("lastElectedTime", Date.now());
@@ -16,6 +17,7 @@ module.exports = function (RED) {
           context.get("lastElectedTime")
       );
     } else {
+      node.log(outputNum + ' is not eligible for re-election');
       return false;
     }
   }
