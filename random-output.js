@@ -6,7 +6,10 @@ module.exports = function (RED) {
         outputNum +
         " is eligible for re-election"
     );
-    if (checkReelectionEligibility(context, outputNum, node, ReElectionBan) == true) {
+    if (
+      checkReelectionEligibility(context, outputNum, node, ReElectionBan) ==
+      true
+    ) {
       context.set("lastElectedNode", outputNum);
       context.set("lastElectedTime", Date.now());
       //2m minutes to expire
@@ -50,14 +53,14 @@ module.exports = function (RED) {
     let node = this;
     let context = this.context();
 
-    const ReElectionBan = 35000; //35 seconds
+    const ReElectionBan = 120000; //35 seconds
     const ElectionTime = 30000; //30 seconds
 
     const numberOfOutputs = config.outputs - 1;
 
     node.on("input", function (msg) {
       node.log("node-red-contrib: Random Output Node created");
-      node.log("node-red-contrib: Number of outputs: " + (numberOfOutputs+1));
+      node.log("node-red-contrib: Number of outputs: " + (numberOfOutputs + 1));
       if (context.get("lastElectedNode") !== undefined) {
         node.log(
           "node-red-contrib: Currently elected node: " +
