@@ -80,6 +80,13 @@ module.exports = function (RED) {
           chosen = context.get("lastElectedNode");
           output[chosen] = msg;
           node.send(output);
+        } else {
+          node.log("node-red-contrib: Election has expired");
+          restartOutputNode = 0;
+          electNode(context, node, restartOutputNode);
+          chosen = context.get("lastElectedNode");
+          output[chosen] = msg;
+          node.send(output);
         }
       } else {
         for (let outputNum = -1; outputNum < numberOfOutputs; outputNum++) {
