@@ -2,7 +2,7 @@ module.exports = function (RED) {
   function electNode(context, node, outputNum) {
     //Check if outputNum is eligible for re-election
     node.log(
-      "Checking if output " + outputNum + " is eligible for re-election"
+      "node-red-contrib: Checking if output " + outputNum + " is eligible for re-election"
     );
     if (checkReelectionEligibility(context, outputNum, node) == true) {
       context.set("lastElectedNode", outputNum);
