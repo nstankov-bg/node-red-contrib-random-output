@@ -11,7 +11,10 @@ module.exports = function (RED) {
       true
     ) {
       context.set("lastElectedNode", outputNum);
-      context.set("lastElectedTime" + context.get("lastElectedNode"), Date.now());
+      context.set(
+        "lastElectedTime" + context.get("lastElectedNode"),
+        Date.now()
+      );
       //2m minutes to expire
       context.set(
         "lastElectedTimeNode" + context.get("lastElectedNode"),
@@ -21,11 +24,18 @@ module.exports = function (RED) {
         "node-red-contrib: Elected node " +
           context.get("lastElectedNode") +
           " at " +
-          context.get("lastElectedTime" + context.get("lastElectedNode"))
+          context.get("lastElectedTime" + outputNum)
       );
     } else {
-      node.log("node-red-contrib: Node " + outputNum + " will be eligable at" + context.get("lastElectedTime" + outputNum));
-      node.log("node-red-contrib: " + outputNum + " is not eligible for re-election");
+      node.log(
+        "node-red-contrib: Node " +
+          outputNum +
+          " will be eligable at" +
+          context.get("lastElectedTime" + outputNum)
+      );
+      node.log(
+        "node-red-contrib: " + outputNum + " is not eligible for re-election"
+      );
       return false;
     }
   }
@@ -54,8 +64,8 @@ module.exports = function (RED) {
     let node = this;
     let context = this.context();
 
-    const ReElectionBan = 120000; //35 seconds
-    const ElectionTime = 30000; //30 seconds
+    const ReElectionBan = 360000; //360 seconds
+    const ElectionTime = 15000; //15 seconds
 
     const numberOfOutputs = config.outputs - 1;
 
@@ -86,8 +96,8 @@ module.exports = function (RED) {
       ) {
         chosen = context.get("lastElectedNode");
         if (
-          context.get("lastElectedTime" + context.get("lastElectedNode") ) > Date.now() - ElectionTime &&
-          context.get("lastElectedTime" + context.get("lastElectedNode")) !== undefined
+          context.get("lastElectedTime" + chosen) > Date.now() - ElectionTime &&
+          context.get("lastElectedTime" + chosen) !== undefined
         ) {
           chosen = context.get("lastElectedNode");
           output[chosen] = msg;
