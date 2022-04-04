@@ -62,6 +62,8 @@ module.exports = function (RED) {
                 Date.now() + 120000
               );
 
+              node.log("lastElectedTimeNode" + context.get('lastElectedNode'));
+
               node.log(
                 "node-red-contrib: Elected node " +
                   context.get("lastElectedNode") +
