@@ -1,41 +1,29 @@
-function checkIfNodeIsElected(context, node, outputNum) {
-  if (context.get("lastElectedNode") === outputNum) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-function checkReElectionEligibility(context, node, outputNum) {}
-
-function electNode(enabled, context, node, outputNum) {
-  if (enabled) {
-    context.set("lastElectedNode", outputNum);
-    context.set("lastElectedTime", Date.now());
-    //2m minutes to expire
-    context.set(
-      "lastElectedTimeNode" + context.get("lastElectedNode"),
-      Date.now() + 120000
-    );
-
-    node.log(
-      "node-red-contrib: Elected node " +
-        context.get("lastElectedNode") +
-        " at " +
-        context.get("lastElectedTime")
-    );
-  }
-  return true;
-}
-
 module.exports = function (RED) {
+  function electNode(enabled, node, outputNum) {
+    context = this.context().global;
+
+    if (enabled) {
+      context.set("lastElectedNode", outputNum);
+      context.set("lastElectedTime", Date.now());
+      //2m minutes to expire
+      context.set(
+        "lastElectedTimeNode" + context.get("lastElectedNode"),
+        Date.now() + 120000
+      );
+  
+      node.log(
+        "node-red-contrib: Elected node " +
+          context.get("lastElectedNode") +
+          " at " +
+          context.get("lastElectedTime")
+      );
+    }
+    return true;
+  }
   function RandomOutputNode(config) {
     RED.nodes.createNode(this, config);
     let node = this;
     let context = this.context();
-
-    // context.get("lastElectedNode")
-    // context.get("lastElectedTime")
 
     node.weights = [];
     for (let weight of config.weights) {
@@ -72,7 +60,7 @@ module.exports = function (RED) {
             weightAggregate += node.weights[outputNum];
             if (randVal < weightAggregate) {
               chosen = outputNum;
-              electNode(true, context, node, outputNum);
+              electNode(true, node, outputNum);
               break;
             }
             chosen = context.get("lastElectedNode");
