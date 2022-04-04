@@ -3,10 +3,6 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
     let node = this;
     let context = this.context();
-    //Check if there is an elected node.
-    let lastElectedNode = context.get("lastElectedNode");
-    //If there is, check if it was elected more than 30s ago.
-    let lastElectedTime = context.get("lastElectedTime");
     node.weights = [];
     for (let weight of config.weights) {
       weight = Number(weight);
@@ -39,7 +35,7 @@ module.exports = function (RED) {
       ) {
         //Check if lastElectedTime is less than 30s ago.
         //30s in unix time
-        if (lastElectedTime > Date.now() - 30000) {
+        if (context.get("lastElectedTime") > Date.now() - 30000) {
           chosen = context.get("lastElectedNode");
           output[chosen] = msg;
           node.send(output);
