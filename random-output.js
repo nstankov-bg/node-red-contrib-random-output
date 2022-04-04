@@ -49,6 +49,9 @@ module.exports = function (RED) {
               context.set("lastElectedTime", Date.now());
               break;
             }
+          chosen = lastElectedNode;
+          output[chosen] = msg;
+          node.send(output);
           }
         }
       } else {
