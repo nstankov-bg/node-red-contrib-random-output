@@ -2,10 +2,13 @@ module.exports = function (RED) {
   function electNode(context, node, outputNum) {
     //Check if outputNum is eligible for re-election
     if (checkReelectionEligibility(context, outputNum, node) == true) {
-      context.set("lastcontext.get("lastElectedNode")", outputNum);
+      context.set("lastElectedNode", outputNum);
       context.set("lastElectedTime", Date.now());
       //2m minutes to expire
-      context.set("lastElectedTimeNode" + context.get("lastElectedNode"), Date.now() + 120000);
+      context.set(
+        "lastElectedTimeNode" + context.get("lastElectedNode"),
+        Date.now() + 120000
+      );
       node.log(
         "node-red-contrib: Elected node " +
           context.get("lastElectedNode") +
@@ -45,9 +48,15 @@ module.exports = function (RED) {
     node.on("input", function (msg) {
       let output = new Array(numberOfOutputs);
       let chosen;
-      if (context.get("lastElectedNode") !== "" && context.get("lastElectedNode") !== undefined) {
+      if (
+        context.get("lastElectedNode") !== "" &&
+        context.get("lastElectedNode") !== undefined
+      ) {
         chosen = context.get("lastElectedNode");
-        if (context.get("lastElectedTime") > Date.now() - 30000 && context.get("lastElectedTime") !== undefined) {
+        if (
+          context.get("lastElectedTime") > Date.now() - 30000 &&
+          context.get("lastElectedTime") !== undefined
+        ) {
           chosen = context.get("lastElectedNode");
           output[chosen] = msg;
           node.send(output);
