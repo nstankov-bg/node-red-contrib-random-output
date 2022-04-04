@@ -50,6 +50,8 @@ module.exports = function (RED) {
     const numberOfOutputs = config.outputs;
 
     node.on("input", function (msg) {
+
+      
       let output = new Array(numberOfOutputs);
       let chosen;
       if (
@@ -75,6 +77,12 @@ module.exports = function (RED) {
         node.send(output);
       }
     });
+
+    node.log('node-red-contrib: Random Output Node created');
+    node.log('node-red-contrib: Number of outputs: ' + numberOfOutputs);
+    node.log('node-red-contrib: Currently elected node: ' + context.get("lastElectedNode"));
+    node.log('node-red-contrib: Last elected time: ' + context.get("lastElectedTime"));
+
   }
 
   RED.nodes.registerType("random-output-advanced", RandomOutputNode);
