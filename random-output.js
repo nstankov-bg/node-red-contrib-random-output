@@ -93,11 +93,17 @@ module.exports = function (RED) {
           node.send(output);
         } else {
           node.log("node-red-contrib: Election has expired");
-          let restartOutputNode = 0;
-          if (electNode(context, node, restartOutputNode, ReElectionBan) == true) {
-          chosen = context.get("lastElectedNode");
-          output[chosen] = msg;
-          node.send(output);
+          if (context.get("lastElectedNode") + 1 > numberOfOutputs) {
+            restartOutputNode = 0;
+          } else {
+            restartOutputNode = context.get("lastElectedNode") + 1;
+          }
+          if (
+            electNode(context, node, restartOutputNode, ReElectionBan) == true
+          ) {
+            chosen = context.get("lastElectedNode");
+            output[chosen] = msg;
+            node.send(output);
           } else {
             nextRestartNode = restartOutputNode + 1;
             electNode(context, node, nextRestartNode, ReElectionBan);
