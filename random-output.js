@@ -71,7 +71,7 @@ module.exports = function (RED) {
         chosen = context.get("lastElectedNode");
         if (checkReelectionEligibility(context, chosen, node) == true) {
           electNode(true, context, node, chosen);
-        } elseif (checkReelectionEligibility(context, chosen, node) == false) {
+        } else { 
           electNode(false, context, node, chosen);
         }
         if (context.get("lastElectedTime") > Date.now() - 30000) {
