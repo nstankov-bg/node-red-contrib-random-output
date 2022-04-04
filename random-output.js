@@ -41,17 +41,16 @@ module.exports = function (RED) {
         //30s in unix time
         if (context.get("lastElectedTime") > Date.now() - 30000) {
           node.log(
-            "Last node elected was " +
+            "node-red-contrib: Last node elected was " +
               context.get("lastElectedNode") +
               " expiration at " +
               context.get("lastElectedTime")
-          )
+          );
           chosen = context.get("lastElectedNode");
           output[chosen] = msg;
           node.send(output);
         } else {
           for (let outputNum = 0; outputNum < numberOfOutputs; outputNum++) {
-            node.log("node-red-contrib: There was node elected. Electing now.");
             weightAggregate += node.weights[outputNum];
             if (randVal < weightAggregate) {
               chosen = outputNum;
