@@ -44,7 +44,7 @@ module.exports = function (RED) {
           outputNum +
           " is not eligible for re-election"
       );
-      outputNumNext = outputNum;
+      outputNumNext = outputNum + 1;
       electNode(context, node, outputNumNext, ReElectionBan);
       return false;
     } else {
