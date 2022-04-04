@@ -11,13 +11,10 @@ module.exports = function (RED) {
       true
     ) {
       context.set("lastElectedNode", outputNum);
-      context.set(
-        "lastElectedTime" + context.get("lastElectedNode"),
-        Date.now()
-      );
+      context.set("lastElectedTime" + outputNum, Date.now());
       //2m minutes to expire
       context.set(
-        "lastElectedTimeNode" + context.get("lastElectedNode"),
+        "lastElectedTimeNode" + outputNum,
         Date.now() + ReElectionBan
       );
       node.log(
