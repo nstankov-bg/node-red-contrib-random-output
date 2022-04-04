@@ -27,7 +27,7 @@ module.exports = function (RED) {
       node.log(
         "node-red-contrib: Node " +
           outputNum +
-          " will be eligable at" +
+          " will be eligable at: " +
           context.get("lastElectedTime" + outputNum)
       );
       node.log(
@@ -37,7 +37,6 @@ module.exports = function (RED) {
     }
   }
   function checkReelectionEligibility(context, outputNum, node, ReElectionBan) {
-    context.get("lastElectedTimeNode" + outputNum);
     //check if the node is eligible for re-election
     if (context.get("lastElectedTimeNode" + outputNum) > Date.now()) {
       node.log(
