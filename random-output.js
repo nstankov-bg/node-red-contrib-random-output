@@ -39,7 +39,7 @@ module.exports = function (RED) {
       ) {
         //Check if lastElectedTime is less than 30s ago.
         //30s in unix time
-        if (lastElectedTime > Date.getTime() - 30000) {
+        if (lastElectedTime > Date.now() - 30000) {
           chosen = context.get("lastElectedNode");
           output[chosen] = msg;
           node.send(output);
