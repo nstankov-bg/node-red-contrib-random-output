@@ -3,10 +3,6 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
     let node = this;
     let context = this.context();
-    //Check if there is an elected node.
-    let lastElectedNode = context.get("lastElectedNode");
-    //If there is, check if it was elected more than 30s ago.
-    let lastElectedTime = context.get("lastElectedTime");
     node.weights = [];
     for (let weight of config.weights) {
       weight = Number(weight);
@@ -33,11 +29,11 @@ module.exports = function (RED) {
       const randVal = Math.random() * weightSum;
       let weightAggregate = 0;
       let chosen;
-      if (lastElectedNode && lastElectedNode !== "") {
+      if (context.get("lastElectedNode") && context.get("lastElectedNode") !== "") {
         //Check if lastElectedTime is less than 30s ago.
         //30s in unix time
-        if (lastElectedTime > Date.getTime() - 30000) {
-          chosen = lastElectedNode;
+        if (context.get("lastElectedTime"); > Date.getTime() - 30000) {
+          chosen = context.get("lastElectedNode");
           output[chosen] = msg;
           node.send(output);
         } else {
@@ -60,7 +56,7 @@ module.exports = function (RED) {
 
               break;
             }
-          chosen = lastElectedNode;
+          chosen = context.get("lastElectedNode");
           output[chosen] = msg;
           node.send(output);
           //Write message in node-red debug log.
@@ -72,7 +68,7 @@ module.exports = function (RED) {
           if (randVal < weightAggregate) {
             context.set("lastElectedNode", outputNum);
             context.set("lastElectedTime", Date.now());
-            chosen = lastElectedNode;
+            chosen = context.get("lastElectedNode");
             break;
           }
         }
