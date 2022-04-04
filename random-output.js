@@ -1,6 +1,6 @@
 module.exports = function (RED) {
   function electNode(enabled, node, outputNum) {
-    context = this.context();
+    let context = this.context();
 
     if (enabled) {
       context.set("lastElectedNode", outputNum);
@@ -10,7 +10,7 @@ module.exports = function (RED) {
         "lastElectedTimeNode" + context.get("lastElectedNode"),
         Date.now() + 120000
       );
-  
+
       node.log(
         "node-red-contrib: Elected node " +
           context.get("lastElectedNode") +
