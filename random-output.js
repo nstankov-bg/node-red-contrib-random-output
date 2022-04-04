@@ -2,7 +2,9 @@ module.exports = function (RED) {
   function electNode(context, node, outputNum, ReElectionBan) {
     //Check if outputNum is eligible for re-election
     node.log(
-      "node-red-contrib: Checking if output " + outputNum + " is eligible for re-election"
+      "node-red-contrib: Checking if output " +
+        outputNum +
+        " is eligible for re-election"
     );
     if (checkReelectionEligibility(context, outputNum, node) == true) {
       context.set("lastElectedNode", outputNum);
@@ -55,7 +57,7 @@ module.exports = function (RED) {
 
     node.on("input", function (msg) {
       node.log("node-red-contrib: Random Output Node created");
-      node.log("node-red-contrib: Number of outputs: " + numberOfOutputs);
+      node.log("node-red-contrib: Number of outputs: " + (numberOfOutputs+1));
       if (context.get("lastElectedNode") !== undefined) {
         node.log(
           "node-red-contrib: Currently elected node: " +
