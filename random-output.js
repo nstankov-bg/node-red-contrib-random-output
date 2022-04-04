@@ -34,8 +34,21 @@ module.exports = function (RED) {
       let weightAggregate = 0;
       let chosen;
       if (isThereElectedNode && isThereElectedNode !== "") {
-        output[chosen] = msg;
-        node.send(output);
+        //Check if lastElectedTime is less than 30s ago.
+        if ((Date.now() - lastElectedTime) < 30000) {
+          output[chosen] = msg;
+          node.send(output);
+        } else {
+          for (let outputNum = 0; outputNum < numberOfOutputs; outputNum++) {
+            weightAggregate += node.weights[outputNum];
+            if (randVal < weightAggregate) {
+              chosen = outputNum;
+              context.set("lastElectedNode", outputNum);
+              context.set("lastElectedTime", Date.now());
+              break;
+            }
+          }
+        }
       } else {
         for (let outputNum = 0; outputNum < numberOfOutputs; outputNum++) {
           weightAggregate += node.weights[outputNum];
