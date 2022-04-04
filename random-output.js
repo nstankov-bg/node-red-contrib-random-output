@@ -34,7 +34,6 @@ module.exports = function (RED) {
       let weightAggregate = 0;
       let chosen;
       if (
-        context.get("lastElectedNode") &&
         context.get("lastElectedNode") !== ""
       ) {
         //Check if lastElectedTime is less than 30s ago.
