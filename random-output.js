@@ -2,11 +2,11 @@ module.exports = function (RED) {
   function RandomOutputNode(config) {
     RED.nodes.createNode(this, config);
     let node = this;
-    let context = this.context();
+    let context = this.context.global();
     //Check if there is an elected node.
-    let isThereElectedNode = context.get("lastElectedNode");
+    var isThereElectedNode = context.get("lastElectedNode");
     //If there is, check if it was elected more than 30s ago.
-    let lastElectedTime = context.get("lastElectedTime");
+    var lastElectedTime = context.get("lastElectedTime");
     node.weights = [];
     for (let weight of config.weights) {
       weight = Number(weight);
