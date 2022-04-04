@@ -44,7 +44,7 @@ module.exports = function (RED) {
           outputNum +
           " is not eligible for re-election"
       );
-      outputNumNext = outputNum + 1;
+      outputNumNext = outputNum;
       electNode(context, node, outputNumNext, ReElectionBan);
       return false;
     } else {
@@ -109,6 +109,10 @@ module.exports = function (RED) {
       } else {
         for (let outputNum = -1; outputNum < numberOfOutputs; outputNum++) {
           chosen = outputNum;
+          //Make sure that chosen is a positive number
+          if (chosen < 0) {
+            chosen = chosen + 1;
+          }
           electNode(context, node, outputNum, ReElectionBan);
         }
         chosen = context.get("lastElectedNode");
