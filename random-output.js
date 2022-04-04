@@ -51,6 +51,7 @@ module.exports = function (RED) {
       let chosen;
       if (context.get("lastElectedNode") !== "") {
         if (context.get("lastElectedTime") > Date.now() - 30000) {
+          chosen = context.get("lastElectedNode");
           output[chosen] = msg;
           node.send(output);
         } else {
@@ -59,7 +60,6 @@ module.exports = function (RED) {
             if (randVal < weightAggregate) {
               chosen = outputNum;
               electNode(true, context, node, outputNum);
-              break;
             }
             chosen = context.get("lastElectedNode");
             output[chosen] = msg;
