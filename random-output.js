@@ -2,7 +2,7 @@ module.exports = function (RED) {
   function RandomOutputNode(config) {
     RED.nodes.createNode(this, config);
     let node = this;
-    let context = this.context();
+    let context = this.context().global;
     node.weights = [];
     for (let weight of config.weights) {
       weight = Number(weight);
