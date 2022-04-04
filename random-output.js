@@ -45,6 +45,7 @@ module.exports = function (RED) {
               " expiration at " +
               context.get("lastElectedTime")
           );
+          node.log("node-red-contrib: lastElectedTimeNode: " + "lastElectedTimeNode" + context.get('lastElectedNode'));
           chosen = context.get("lastElectedNode");
           output[chosen] = msg;
           node.send(output);
@@ -93,8 +94,6 @@ module.exports = function (RED) {
         node.send(output);
       }
     });
-    
-    node.log("node-red-contrib:lastElectedTimeNode: " + context.get('lastElectedNode'));
   }
 
   RED.nodes.registerType("random-output-advanced", RandomOutputNode);
