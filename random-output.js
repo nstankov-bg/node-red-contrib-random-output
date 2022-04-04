@@ -23,10 +23,10 @@ module.exports = function (RED) {
     //check if the node is eligible for re-election
     if (context.get("lastElectedTimeNode" + outputNum) > Date.now()) {
       node.log( "node-red-contrib: Node " + outputNum + " is eligible for re-election");
-      return true;
+      return false;
     } else {
       node.log( "node-red-contrib: Node " + outputNum + " is not eligible for re-election");
-      return false;
+      return true;
     }
   }
 
@@ -62,11 +62,11 @@ module.exports = function (RED) {
       let weightAggregate = 0;
       let chosen;
       if (context.get("lastElectedNode") !== "") {
+        chosen = context.get("lastElectedNode");
+        if (checkReelectionEligibility(context, chosen, node)) {
+          electNode(true, context, node, chosen);
+        }
         if (context.get("lastElectedTime") > Date.now() - 30000) {
-          chosen = context.get("lastElectedNode");
-          if (checkReelectionEligibility(context, chosen, node)) {
-            electNode(true, context, node, chosen);
-          }
           chosen = context.get("lastElectedNode");
           output[chosen] = msg;
           node.send(output);
