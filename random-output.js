@@ -1,3 +1,34 @@
+function checkIfNodeIsElected(context, node, outputNum) {
+  if (context.get("lastElectedNode") === outputNum) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function checkReElectionEligibility(context, node, outputNum) {
+
+}
+
+function electNode(enabled, context, node, outputNum) {
+  if (enabled){
+  context.set("lastElectedNode", outputNum);
+  context.set("lastElectedTime", Date.now());
+  //2m minutes to expire
+  context.set(
+    "lastElectedTimeNode" + context.get('lastElectedNode'),
+    Date.now() + 120000
+  );
+
+  node.log(
+    "node-red-contrib: Elected node " +
+      context.get("lastElectedNode") +
+      " at " +
+      context.get("lastElectedTime")
+  );
+  }
+}
+
 module.exports = function (RED) {
   function RandomOutputNode(config) {
     RED.nodes.createNode(this, config);
@@ -54,44 +85,14 @@ module.exports = function (RED) {
             weightAggregate += node.weights[outputNum];
             if (randVal < weightAggregate) {
               chosen = outputNum;
-              context.set("lastElectedNode", outputNum);
-              context.set("lastElectedTime", Date.now());
-              //2m minutes to expire
-              context.set(
-                "lastElectedTimeNode" + context.get('lastElectedNode'),
-                Date.now() + 120000
-              );
-
-              node.log(
-                "node-red-contrib: Elected node " +
-                  context.get("lastElectedNode") +
-                  " at " +
-                  context.get("lastElectedTime")
-              );
-
+              electNode(true, context, node, outputNum);
               break;
             }
             chosen = context.get("lastElectedNode");
             output[chosen] = msg;
             node.send(output);
-            //Write message in node-red debug log.
           }
         }
-      } else {
-        for (let outputNum = 0; outputNum < numberOfOutputs; outputNum++) {
-          weightAggregate += node.weights[outputNum];
-          if (randVal < weightAggregate) {
-            context.set("lastElectedNode", outputNum);
-            context.set("lastElectedTime", Date.now());
-            chosen = context.get("lastElectedNode");
-            break;
-          }
-        }
-        node.log(
-          "node-red-contrib: No election was made. Using default else()."
-        );
-        output[chosen] = msg;
-        node.send(output);
       }
     });
   }
