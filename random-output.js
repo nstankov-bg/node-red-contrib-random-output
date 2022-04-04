@@ -43,7 +43,7 @@ module.exports = function (RED) {
         } else {
           for (let outputNum = 0; outputNum < numberOfOutputs; outputNum++) {
             node.log(
-              "There was node elected. Electing now."
+              "node-red-contrib: There was node elected. Electing now."
             )
             weightAggregate += node.weights[outputNum];
             if (randVal < weightAggregate) {
@@ -52,7 +52,7 @@ module.exports = function (RED) {
               context.set("lastElectedTime", Date.now());
 
               node.log(
-                "Elected node " +
+                "node-red-contrib: Elected node " +
                   context.get("lastElectedNode") +
                   " at " +
                   context.get("lastElectedTime")
