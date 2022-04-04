@@ -68,7 +68,7 @@ module.exports = function (RED) {
         );
         node.log(
           "node-red-contrib: Last elected time: " +
-            context.get("lastElectedTime")
+            context.get("lastElectedTime" + context.get("lastElectedNode"))
         );
         node.log("node-red-contrib: Current Unix Time: " + Date.now());
       } else {
