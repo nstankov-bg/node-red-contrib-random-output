@@ -40,6 +40,12 @@ module.exports = function (RED) {
           chosen = lastElectedNode;
           output[chosen] = msg;
           node.send(output);
+          node.log(
+            "Message sent to node " +
+              chosen +
+              " with message " +
+              JSON.stringify(msg)
+          );
         } else {
           for (let outputNum = 0; outputNum < numberOfOutputs; outputNum++) {
             weightAggregate += node.weights[outputNum];
@@ -49,9 +55,16 @@ module.exports = function (RED) {
               context.set("lastElectedTime", Date.now());
               break;
             }
+            node.log(
+              "Message sent to node " +
+                chosen +
+                " with message " +
+                JSON.stringify(msg)
+            );
           chosen = lastElectedNode;
           output[chosen] = msg;
           node.send(output);
+          //Write message in node-red debug log.
           }
         }
       } else {
@@ -64,6 +77,12 @@ module.exports = function (RED) {
             break;
           }
         }
+        node.log(
+          "Message sent to node " +
+            chosen +
+            " with message " +
+            JSON.stringify(msg)
+        );
         output[chosen] = msg;
         node.send(output);
       }
