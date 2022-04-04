@@ -32,7 +32,8 @@ module.exports = function (RED) {
           outputNum +
           " is not eligible for re-election"
       );
-      electNode(context, node, outputNum++);
+      outputNumNext = outputNum + 1;
+      electNode(context, node, outputNumNext);
       return false;
     } else {
       node.log(
