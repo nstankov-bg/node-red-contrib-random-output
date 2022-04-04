@@ -69,8 +69,10 @@ module.exports = function (RED) {
       let chosen;
       if (context.get("lastElectedNode") !== "") {
         chosen = context.get("lastElectedNode");
-        if (checkReelectionEligibility(context, chosen, node)) {
+        if (checkReelectionEligibility(context, chosen, node) == true) {
           electNode(true, context, node, chosen);
+        } elseif (checkReelectionEligibility(context, chosen, node) == false) {
+          electNode(false, context, node, chosen);
         }
         if (context.get("lastElectedTime") > Date.now() - 30000) {
           chosen = context.get("lastElectedNode");
