@@ -59,6 +59,7 @@ module.exports = function (RED) {
     const numberOfOutputs = config.outputs - 1;
 
     node.on("input", function (msg) {
+      node.log("------------------------------------------------------");
       node.log("node-red-contrib: Random Output Node created");
       node.log("node-red-contrib: Number of outputs: " + (numberOfOutputs + 1));
       if (context.get("lastElectedNode") !== undefined) {
@@ -74,6 +75,7 @@ module.exports = function (RED) {
       } else {
         node.log("node-red-contrib: No node has been elected yet");
       }
+      node.log("------------------------------------------------------");
 
       let output = new Array(numberOfOutputs);
       let chosen;
