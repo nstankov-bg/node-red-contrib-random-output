@@ -98,7 +98,7 @@ module.exports = function (RED) {
           node.send(output);
         } else {
           node.log("node-red-contrib: Election has expired");
-          restartOutputNode = 0;
+          let restartOutputNode = 0;
           if (electNode(context, node, restartOutputNode, ReElectionBan) == true) {
           chosen = context.get("lastElectedNode");
           output[chosen] = msg;
@@ -115,7 +115,7 @@ module.exports = function (RED) {
           if (chosen < 0) {
             chosen = chosen + 1;
           }
-          if (electNode(context, node, restartOutputNode, ReElectionBan) == true) {
+          if (electNode(context, node, chosen, ReElectionBan) == true) {
             node.log("node-red-contrib: Elected node " + chosen);
           } else {
             node.log("node-red-contrib: Node " + chosen + " is banned");
