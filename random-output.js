@@ -2,7 +2,11 @@ module.exports = function (RED) {
   function RandomOutputNode(config) {
     RED.nodes.createNode(this, config);
     let node = this;
-    let context = this.context().global;
+    let context = this.context();
+    //Check if there is an elected node.
+    let lastElectedNode = context.get("lastElectedNode");
+    //If there is, check if it was elected more than 30s ago.
+    let lastElectedTime = context.get("lastElectedTime");
     node.weights = [];
     for (let weight of config.weights) {
       weight = Number(weight);
@@ -29,18 +33,19 @@ module.exports = function (RED) {
       const randVal = Math.random() * weightSum;
       let weightAggregate = 0;
       let chosen;
-      if (context.get("lastElectedNode") && context.get("lastElectedNode") !== "") {
+      if (
+        context.get("lastElectedNode") &&
+        context.get("lastElectedNode") !== ""
+      ) {
         //Check if lastElectedTime is less than 30s ago.
         //30s in unix time
-        if (context.get("lastElectedTime"); > Date.getTime() - 30000) {
+        if (lastElectedTime > Date.getTime() - 30000) {
           chosen = context.get("lastElectedNode");
           output[chosen] = msg;
           node.send(output);
         } else {
           for (let outputNum = 0; outputNum < numberOfOutputs; outputNum++) {
-            node.log(
-              "node-red-contrib: There was node elected. Electing now."
-            )
+            node.log("node-red-contrib: There was node elected. Electing now.");
             weightAggregate += node.weights[outputNum];
             if (randVal < weightAggregate) {
               chosen = outputNum;
@@ -56,10 +61,10 @@ module.exports = function (RED) {
 
               break;
             }
-          chosen = context.get("lastElectedNode");
-          output[chosen] = msg;
-          node.send(output);
-          //Write message in node-red debug log.
+            chosen = context.get("lastElectedNode");
+            output[chosen] = msg;
+            node.send(output);
+            //Write message in node-red debug log.
           }
         }
       } else {
