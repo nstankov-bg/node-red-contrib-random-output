@@ -1,7 +1,7 @@
 module.exports = function (RED) {
   function RandomOutputNode(config) {
     RED.nodes.createNode(this, config);
-    let time = new Date();
+    var time = new Date();
     let node = this;
     let context = this.context();
     //Check if there is an elected node.
