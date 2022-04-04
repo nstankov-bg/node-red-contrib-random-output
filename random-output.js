@@ -1,6 +1,6 @@
 module.exports = function (RED) {
   function electNode(enabled, node, outputNum) {
-    context = this.context().global;
+    context = this.context();
 
     if (enabled) {
       context.set("lastElectedNode", outputNum);
