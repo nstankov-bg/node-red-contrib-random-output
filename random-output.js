@@ -10,7 +10,7 @@ module.exports = function (RED) {
       //2m minutes to expire
       context.set(
         "lastElectedTimeNode" + context.get("lastElectedNode"),
-        Date.now() + 120000
+        Date.now() + 60000
       );
       node.log(
         "node-red-contrib: Elected node " +
