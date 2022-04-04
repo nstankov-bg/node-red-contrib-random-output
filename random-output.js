@@ -1,7 +1,6 @@
 module.exports = function (RED) {
   function RandomOutputNode(config) {
     RED.nodes.createNode(this, config);
-    var time = new Date();
     let node = this;
     let context = this.context();
     //Check if there is an elected node.
@@ -37,7 +36,7 @@ module.exports = function (RED) {
       if (isThereElectedNode && isThereElectedNode !== "") {
         //Check if lastElectedTime is less than 30s ago.
         //30s in unix time
-        if (lastElectedTime > time.getTime() - 30000) {
+        if (lastElectedTime > Date.getTime() - 30000) {
           output[chosen] = msg;
           node.send(output);
         } else {
@@ -46,7 +45,7 @@ module.exports = function (RED) {
             if (randVal < weightAggregate) {
               chosen = outputNum;
               context.set("lastElectedNode", outputNum);
-              context.set("lastElectedTime", time.now());
+              context.set("lastElectedTime", Date.now());
               break;
             }
           }
@@ -57,7 +56,7 @@ module.exports = function (RED) {
           if (randVal < weightAggregate) {
             chosen = outputNum;
             context.set("lastElectedNode", outputNum);
-            context.set("lastElectedTime", time.now());
+            context.set("lastElectedTime", Date.now());
             break;
           }
         }
