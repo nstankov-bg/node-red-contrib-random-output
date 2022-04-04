@@ -21,7 +21,7 @@ module.exports = function (RED) {
   function checkReelectionEligibility(context, outputNum) {
     context.get("lastElectedTimeNode" + outputNum);
     //check if the node is eligible for re-election
-    if (context.get("lastElectedTimeNode" + outputNum) < Date.now()) {
+    if (context.get("lastElectedTimeNode" + outputNum) > Date.now()) {
       return true;
     } else {
       return false;
@@ -62,7 +62,7 @@ module.exports = function (RED) {
       if (context.get("lastElectedNode") !== "") {
         if (context.get("lastElectedTime") > Date.now() - 30000) {
           chosen = context.get("lastElectedNode");
-          if (!checkReelectionEligibility(context, chosen)) {
+          if (checkReelectionEligibility(context, chosen)) {
             electNode(true, context, node, chosen);
           }
           chosen = context.get("lastElectedNode");
