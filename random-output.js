@@ -25,6 +25,7 @@ function electNode(enabled, context, node, outputNum) {
         context.get("lastElectedTime")
     );
   }
+  return true;
 }
 
 module.exports = function (RED) {
