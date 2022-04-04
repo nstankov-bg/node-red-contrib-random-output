@@ -48,7 +48,7 @@ module.exports = function (RED) {
     let node = this;
     let context = this.context();
 
-    const numberOfOutputs = config.outputs;
+    const numberOfOutputs = config.outputs - 1;
 
     node.on("input", function (msg) {
       node.log("node-red-contrib: Random Output Node created");
