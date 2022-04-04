@@ -40,27 +40,26 @@ module.exports = function (RED) {
           chosen = lastElectedNode;
           output[chosen] = msg;
           node.send(output);
-          node.log(
-            "Message sent to node " +
-              chosen +
-              " with message " +
-              JSON.stringify(msg)
-          );
         } else {
           for (let outputNum = 0; outputNum < numberOfOutputs; outputNum++) {
+            node.log(
+              "There was node elected. Electing now."
+            )
             weightAggregate += node.weights[outputNum];
             if (randVal < weightAggregate) {
               chosen = outputNum;
               context.set("lastElectedNode", outputNum);
               context.set("lastElectedTime", Date.now());
+
+              node.log(
+                "Elected node " +
+                  context.get("lastElectedNode") +
+                  " at " +
+                  context.get("lastElectedTime")
+              );
+
               break;
             }
-            node.log(
-              "Message sent to node " +
-                chosen +
-                " with message " +
-                JSON.stringify(msg)
-            );
           chosen = lastElectedNode;
           output[chosen] = msg;
           node.send(output);
@@ -77,12 +76,6 @@ module.exports = function (RED) {
             break;
           }
         }
-        node.log(
-          "Message sent to node " +
-            chosen +
-            " with message " +
-            JSON.stringify(msg)
-        );
         output[chosen] = msg;
         node.send(output);
       }
