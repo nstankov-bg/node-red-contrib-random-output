@@ -54,15 +54,15 @@ module.exports = function (RED) {
           chosen = electedNode;
           output[chosen] = msg;
           node.send(output);
-        } else {
-          for (let outputNum = 0; outputNum < numberOfOutputs; outputNum++) {
-            chosen = outputNum;
-            electNode(context, node, outputNum);
-          }
-          chosen = electedNode;
-          output[chosen] = msg;
-          node.send(output);
         }
+      } else {
+        for (let outputNum = 0; outputNum < numberOfOutputs; outputNum++) {
+          chosen = outputNum;
+          electNode(context, node, outputNum);
+        }
+        chosen = electedNode;
+        output[chosen] = msg;
+        node.send(output);
       }
     });
   }
