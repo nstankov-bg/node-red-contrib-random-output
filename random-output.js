@@ -3,6 +3,10 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
     let node = this;
     let context = this.context();
+
+    // context.get("lastElectedNode")
+    // context.get("lastElectedTime")
+
     node.weights = [];
     for (let weight of config.weights) {
       weight = Number(weight);
@@ -36,6 +40,12 @@ module.exports = function (RED) {
         //Check if lastElectedTime is less than 30s ago.
         //30s in unix time
         if (context.get("lastElectedTime") > Date.now() - 30000) {
+          node.log(
+            "Last node elected was " +
+              context.get("lastElectedNode") +
+              " expiration at " +
+              context.get("lastElectedTime")
+          )
           chosen = context.get("lastElectedNode");
           output[chosen] = msg;
           node.send(output);
@@ -47,6 +57,11 @@ module.exports = function (RED) {
               chosen = outputNum;
               context.set("lastElectedNode", outputNum);
               context.set("lastElectedTime", Date.now());
+              //2m minutes to expire
+              context.set(
+                "lastElectedTimeNode" + context.get(lastElectedNode),
+                Date.now() + 120000
+              );
 
               node.log(
                 "node-red-contrib: Elected node " +
