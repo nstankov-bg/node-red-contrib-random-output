@@ -1,5 +1,5 @@
 module.exports = function (RED) {
-  function resetElection(config, election) {
+  function resetElection(context,config, election) {
     const numberOfOutputs = config.outputs - 1;
     if (election === true) {
       context.set("ResetElection", true);
@@ -81,7 +81,7 @@ module.exports = function (RED) {
       node.log("node-red-contrib: Number of outputs: " + (numberOfOutputs + 1));
 
       if (msg.topic == "ResetElectionBan") {
-        resetElection(config, true);
+        resetElection(context, config, true);
       }
 
       if (context.get("lastElectedNode") !== undefined) {
