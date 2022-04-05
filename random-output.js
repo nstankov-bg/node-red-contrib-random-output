@@ -114,7 +114,7 @@ module.exports = function (RED) {
       } else {
         let lastElectedTimeArray = new Array(numberOfOutputs);
         for (let outputNum = -1; outputNum < numberOfOutputs; outputNum++) {
-            
+          chosen = outputNum;
           Array.push(lastElectedTimeArray, context.get("lastElectedTime" + outputNum));
           node.log("node-red-contrib: lastElectedTimeArray: " + lastElectedTimeArray);
           
