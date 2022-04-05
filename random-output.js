@@ -95,32 +95,42 @@ module.exports = function (RED) {
           node.send(output);
         } else {
           node.log("node-red-contrib: Election has expired");
-          if (context.get("lastElectedNode") + 1 > numberOfOutputs) {
-            restartOutputNode = 0;
-          } else {
-            restartOutputNode = context.get("lastElectedNode") + 1;
+          let lastElectedTimeObject = {};
+          for (let outputNum = -1; outputNum < numberOfOutputs; outputNum++) {
+            //Push outputNum to lastElectedTimeObject as key and current time as value
+            lastElectedTimeObject[outputNum] = context.get("lastElectedTime" + outputNum);
           }
+          //Sort lastElectedTimeObject by value
+          let sortedLastElectedTimeObject = Object.keys(lastElectedTimeObject).sort(function(a,b){return lastElectedTimeObject[a]-lastElectedTimeObject[b]});
+          //Check if the last node is eligible for re-election
           if (
-            electNode(context, node, restartOutputNode, ReElectionBan) == true
+            electNode(context, node, sortedLastElectedTimeObject[0], ReElectionBan) ==
+            true
           ) {
-            chosen = context.get("lastElectedNode");
-            output[chosen] = msg;
+            output[sortedLastElectedTimeObject[0]] = msg;
             node.send(output);
-          } else {
-            nextRestartNode = restartOutputNode + 1;
-            electNode(context, node, nextRestartNode, ReElectionBan);
           }
+          node.log(
+            "node-red-contrib: lastElectedTimeObject: " +
+              JSON.stringify(lastElectedTimeObject)
+          )
+
         }
       } else {
-        let lastElectedTimeObject = {};
         for (let outputNum = -1; outputNum < numberOfOutputs; outputNum++) {
-          //Push outputNum to lastElectedTimeObject as key and current time as value
-          lastElectedTimeObject[outputNum] = context.get("lastElectedTime" + outputNum);
+          chosen = outputNum;
+          //Make sure that chosen is a positive number
+          if (chosen < 0) {
+            chosen = chosen + 1;
+          }
+          if (electNode(context, node, chosen, ReElectionBan) == true) {
+            node.log("node-red-contrib: Elected node " + chosen);
+            break
+          } else {
+            node.log("node-red-contrib: Node " + chosen + " is banned");
+            electNode(context, node, chosen + 1, ReElectionBan);
+          }
         }
-        node.log(
-          "node-red-contrib: lastElectedTimeObject: " +
-            JSON.stringify(lastElectedTimeObject)
-        )
         chosen = context.get("lastElectedNode");
         output[chosen] = msg;
         node.send(output);
