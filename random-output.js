@@ -31,7 +31,7 @@ module.exports = function (RED) {
         "node-red-contrib: Node " +
           outputNum +
           " will be eligable at: " +
-          context.get("lastElectedTime" + outputNum)
+          context.get("ElectionBannedUntill" + outputNum)
       );
       node.log(
         "node-red-contrib: " + outputNum + " is not eligible for re-election"
