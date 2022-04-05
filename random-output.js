@@ -80,12 +80,15 @@ module.exports = function (RED) {
       node.log("------------------------------------------------------");
 
       let output = new Array(numberOfOutputs);
-      let chosen;
+      let chosen = 0;
       if (
         context.get("lastElectedNode") !== "" &&
         context.get("lastElectedNode") !== undefined
       ) {
         chosen = context.get("lastElectedNode");
+        if (chosen > numberOfOutputs) {
+          chosen = 0;
+        }
         if (
           context.get("lastElectedTime" + chosen) > Date.now() - ElectionTime &&
           context.get("lastElectedTime" + chosen) !== undefined
