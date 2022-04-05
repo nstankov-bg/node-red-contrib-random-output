@@ -5,7 +5,7 @@ module.exports = function (RED) {
       context.set("ResetElection", true);
       for (let outputNum = -1; outputNum < numberOfOutputs; outputNum++) {
         context.set(
-          context.get("ElectionBannedUntill" + outputNum, Date.now() - 10000)
+          context.get("ElectionBannedUntill" + outputNum), (Date.now() - 10000)
         );
         node.log("node-red-contrib: Election reset for output " + outputNum);
       }
