@@ -112,12 +112,12 @@ module.exports = function (RED) {
           }
         }
       } else {
+        let lastElectedTimeArray = new Array(numberOfOutputs);
         for (let outputNum = -1; outputNum < numberOfOutputs; outputNum++) {
-          chosen = outputNum;
-          //Make sure that chosen is a positive number
-          if (chosen < 0) {
-            chosen = chosen + 1;
-          }
+            
+          Array.push(lastElectedTimeArray, context.get("lastElectedTime" + outputNum));
+          node.log("node-red-contrib: lastElectedTimeArray: " + lastElectedTimeArray);
+          
           if (electNode(context, node, chosen, ReElectionBan) == true) {
             node.log("node-red-contrib: Elected node " + chosen);
             break;
