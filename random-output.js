@@ -26,6 +26,7 @@ module.exports = function (RED) {
           " at " +
           context.get("lastElectedTime" + outputNum)
       );
+      return true;
     } else {
       node.log(
         "node-red-contrib: Node " +
@@ -41,9 +42,9 @@ module.exports = function (RED) {
   }
   function checkReelectionEligibility(context, outputNum) {
     //check if the node is eligible for re-election
-    if (context.get("ElectionBannedUntill" + outputNum) < Date.now()) {
+    if (context.get("ElectionBannedUntill" + outputNum) > Date.now()) {
       return false;
-    } else {
+    } else if(context.get("ElectionBannedUntill" + outputNum) < Date.now()) {
       return true;
     }
   }
