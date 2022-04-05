@@ -41,7 +41,7 @@ module.exports = function (RED) {
   }
   function checkReelectionEligibility(context, outputNum) {
     //check if the node is eligible for re-election
-    if (context.get("ElectionBannedUntill" + outputNum) > Date.now()) {
+    if (context.get("ElectionBannedUntill" + outputNum) < Date.now()) {
       return false;
     } else {
       return true;
