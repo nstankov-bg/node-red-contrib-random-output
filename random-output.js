@@ -48,6 +48,32 @@ module.exports = function (RED) {
     }
   }
 
+  function startFromZero(context, node, ReElectionBan){
+          //Check if there is an elected node
+          if (context.get("lastElectedNode") !== undefined) {
+            node.log(
+              "node-red-contrib: Elected node: " + context.get("lastElectedNode")
+            );
+          } else {
+            node.log("node-red-contrib: No elected node");
+            //Elect the first node
+            electNode(context, node, 0, ReElectionBan);
+          }
+  }
+
+  function checkCurrentlyElectedNode(context, node, ElectionTime, ReElectionBan) {
+    //Check if there is an elected node
+    if (context.get("lastElectedNode") !== undefined) {
+      electedFor = context.get("lastElectedTime" + context.get("lastElectedNode"));
+      if (electedFor + ElectionTime < Date.now()) {
+        //Elect the next node
+        electNode(context, node, context.get("lastElectedNode") + 1, ReElectionBan);
+      }
+    } else {
+      //Elect the first node
+      startFromZero();
+    }
+
   function RandomOutputNode(config) {
     RED.nodes.createNode(this, config);
     let node = this;
@@ -64,23 +90,13 @@ module.exports = function (RED) {
       node.log("node-red-contrib: Number of outputs: " + (numberOfOutputs + 1));
 
       let output = new Array(numberOfOutputs);
-      let chosen = 0;
-      //Check if there is an elected node
-      if (context.get("lastElectedNode") !== undefined) {
-        node.log(
-          "node-red-contrib: Elected node: " + context.get("lastElectedNode")
-        );
-        }
-        else {
-        node.log("node-red-contrib: No elected node");
-        //Elect the first node
-        electNode(context, node, 0, ReElectionBan);
-      }
+      
+      checkCurrentlyElectedNode(context, node, ElectionTime, ReElectionBan);
 
-        chosen = context.get("lastElectedNode");
-        output[chosen] = msg;
-        node.send(output);
-      });
+      chosen = context.get("lastElectedNode");
+      output[chosen] = msg;
+      node.send(output);
+    });
   }
 
   RED.nodes.registerType("random-output-advanced", RandomOutputNode);
