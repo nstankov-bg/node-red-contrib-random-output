@@ -100,4 +100,5 @@ module.exports = function (RED) {
   }
 
   RED.nodes.registerType("random-output-advanced", RandomOutputNode);
+}
 };
