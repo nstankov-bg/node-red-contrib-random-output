@@ -79,7 +79,7 @@ module.exports = function (RED) {
       node.log("node-red-contrib: Random Output Node created");
       node.log("node-red-contrib: Number of outputs: " + (numberOfOutputs + 1));
 
-      if (msg.topic == "resetElection") {
+      if (msg.topic == "ResetElectionBan") {
         resetElection(config, true);
       }
 
