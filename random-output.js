@@ -73,8 +73,7 @@ module.exports = function (RED) {
           node.log(
             "node-red-contrib: Reset Election Ban for output " + i
           )
-        }
-        var msg = {"payload":{"multiple":true,"data":{"20":true,"21":"colour","22":900,"23":0,"24":"0006000003E8","25":"000e0d0000000000000000c80000","26":3}}}
+          }
       }
 
       if (context.get("lastElectedNode") !== undefined) {
