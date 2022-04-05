@@ -95,7 +95,7 @@ module.exports = function (RED) {
           node.log("node-red-contrib: Election has expired");
           if (context.get("lastElectedNode") + 1 === numberOfOutputs) {
             restartOutputNode = 0;
-          } elseif (context.get("lastElectedNode") + 1 > numberOfOutputs) {
+          } else if (context.get("lastElectedNode") + 1 > numberOfOutputs) {
             restartOutputNode = 0;
           } else {
             restartOutputNode = context.get("lastElectedNode") + 1;
