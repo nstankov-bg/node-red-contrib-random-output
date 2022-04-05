@@ -112,20 +112,14 @@ module.exports = function (RED) {
           }
         }
       } else {
-        let lastElectedTimeArray = [];
+        let lastElectedTimeObject = {};
         for (let outputNum = -1; outputNum < numberOfOutputs; outputNum++) {
-          chosen = outputNum;
-          lastElectedTimeArray.push(lastElectedTimeArray, context.get("lastElectedTime" + outputNum));
-          node.log("node-red-contrib: lastElectedTimeArray: " + lastElectedTimeArray);
-          
-          if (electNode(context, node, chosen, ReElectionBan) == true) {
-            node.log("node-red-contrib: Elected node " + chosen);
-            break;
-          } else {
-            node.log("node-red-contrib: Node " + chosen + " is banned");
-            electNode(context, node, chosen + 1, ReElectionBan);
-          }
+          //Push outputNum to lastElectedTimeObject as key and current time as value
+          lastElectedTimeObject[outputNum] = context.get("lastElectedTime" + outputNum);
         }
+        node.log(
+          lastElectedTimeObject
+        )
         chosen = context.get("lastElectedNode");
         output[chosen] = msg;
         node.send(output);
