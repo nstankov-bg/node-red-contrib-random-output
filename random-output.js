@@ -39,6 +39,14 @@ module.exports = function (RED) {
       return false;
     }
   }
+  function checkReelectionEligibility(context, outputNum) {
+    //check if the node is eligible for re-election
+    if (context.get("ElectionBannedUntill" + outputNum) > Date.now()) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 
   function RandomOutputNode(config) {
     RED.nodes.createNode(this, config);
