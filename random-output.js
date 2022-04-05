@@ -66,9 +66,9 @@ module.exports = function (RED) {
       node.log("node-red-contrib: Random Output Node created");
       node.log("node-red-contrib: Number of outputs: " + (numberOfOutputs + 1));
 
-      if (msg.topic == "ResetElectionBan") {
+      if (msg.payload = "ResetElectionBan") {
         node.log("node-red-contrib: Reset Election Ban");
-        for (let i = 1; i <= numberOfOutputs; i++) {
+        for (let i = 0; i <= numberOfOutputs; i++) {
           context.set("ElectionBannedUntill" + i, 0);
           node.log(
             "node-red-contrib: Reset Election Ban for output " + i
