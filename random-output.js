@@ -1,4 +1,19 @@
 module.exports = function (RED) {
+
+  function resetElection(config, election) {
+    const numberOfOutputs = config.outputs - 1;
+    if (election === true){
+    context.set("ResetElection", true);
+    for (let outputNum = -1; outputNum < numberOfOutputs; outputNum++) {
+      context.set(context.get(
+        "ElectionBannedUntill" + outputNum,
+        Date.now() - 10000
+      ));
+    }
+    return true;
+    
+  }
+
   function electNode(context, node, outputNum, ReElectionBan) {
     //Check if outputNum is eligible for re-election
     node.log(
@@ -65,6 +80,11 @@ module.exports = function (RED) {
       node.log("------------------------------------------------------");
       node.log("node-red-contrib: Random Output Node created");
       node.log("node-red-contrib: Number of outputs: " + (numberOfOutputs + 1));
+
+      if (msg.payload == "resetElection") {
+        resetElection(config, true);
+      }
+
       if (context.get("lastElectedNode") !== undefined) {
         node.log(
           "node-red-contrib: Currently elected node: " +
