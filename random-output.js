@@ -118,9 +118,8 @@ module.exports = function (RED) {
             ) == true
           ) {
             output[sortedLastElectedTimeObject[0]] = msg;
-            node.send(output);
           } else {
-            lastElected = sortedLastElectedTimeObject[0] + 1;
+            lastElected = context.get("lastElectedNode") + 1;
             if (lastElected > numberOfOutputs) {
               lastElected = 0;
             }
