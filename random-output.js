@@ -1,17 +1,15 @@
 module.exports = function (RED) {
-
   function resetElection(config, election) {
     const numberOfOutputs = config.outputs - 1;
-    if (election === true){
-    context.set("ResetElection", true);
-    for (let outputNum = -1; outputNum < numberOfOutputs; outputNum++) {
-      context.set(context.get(
-        "ElectionBannedUntill" + outputNum,
-        Date.now() - 10000
-      ));
+    if (election === true) {
+      context.set("ResetElection", true);
+      for (let outputNum = -1; outputNum < numberOfOutputs; outputNum++) {
+        context.set(
+          context.get("ElectionBannedUntill" + outputNum, Date.now() - 10000)
+        );
+      }
+      return true;
     }
-    return true;
-    
   }
 
   function electNode(context, node, outputNum, ReElectionBan) {
@@ -58,7 +56,7 @@ module.exports = function (RED) {
     //check if the node is eligible for re-election
     if (context.get("ElectionBannedUntill" + outputNum) > Date.now()) {
       return false;
-    } else if(context.get("ElectionBannedUntill" + outputNum) < Date.now()) {
+    } else if (context.get("ElectionBannedUntill" + outputNum) < Date.now()) {
       return true;
     } else {
       return true;
@@ -81,7 +79,7 @@ module.exports = function (RED) {
       node.log("node-red-contrib: Random Output Node created");
       node.log("node-red-contrib: Number of outputs: " + (numberOfOutputs + 1));
 
-      if (msg.payload == "resetElection") {
+      if (msg.topic == "resetElection") {
         resetElection(config, true);
       }
 
@@ -141,7 +139,7 @@ module.exports = function (RED) {
           }
           if (electNode(context, node, chosen, ReElectionBan) == true) {
             node.log("node-red-contrib: Elected node " + chosen);
-            break
+            break;
           } else {
             node.log("node-red-contrib: Node " + chosen + " is banned");
             electNode(context, node, chosen + 1, ReElectionBan);
