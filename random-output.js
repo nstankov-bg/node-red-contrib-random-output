@@ -118,7 +118,8 @@ module.exports = function (RED) {
           lastElectedTimeObject[outputNum] = context.get("lastElectedTime" + outputNum);
         }
         node.log(
-          lastElectedTimeObject
+          "node-red-contrib: lastElectedTimeObject: " +
+            JSON.stringify(lastElectedTimeObject)
         )
         chosen = context.get("lastElectedNode");
         output[chosen] = msg;
