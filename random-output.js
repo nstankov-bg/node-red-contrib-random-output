@@ -55,8 +55,9 @@ module.exports = function (RED) {
     let node = this;
     let context = this.context();
 
-    const ReElectionBan = 360000; //360 seconds
-    const ElectionTime = 15000; //15 seconds
+    //4 hours
+    const ReElectionBan = 4 * 60 * 60 * 1000; //4 hours
+    const ElectionTime = 20000; //20 seconds
 
     const numberOfOutputs = config.outputs - 1;
 
@@ -67,7 +68,7 @@ module.exports = function (RED) {
       if (context.get("lastElectedNode") !== undefined) {
         node.log(
           "node-red-contrib: Currently elected node: " +
-            (context.get("lastElectedNode") + 1)
+            context.get("lastElectedNode")
         );
         node.log(
           "node-red-contrib: Last elected time: " +
@@ -80,15 +81,12 @@ module.exports = function (RED) {
       node.log("------------------------------------------------------");
 
       let output = new Array(numberOfOutputs);
-      let chosen = 0;
+      let chosen;
       if (
         context.get("lastElectedNode") !== "" &&
         context.get("lastElectedNode") !== undefined
       ) {
         chosen = context.get("lastElectedNode");
-        if (chosen > numberOfOutputs) {
-          chosen = 0;
-        }
         if (
           context.get("lastElectedTime" + chosen) > Date.now() - ElectionTime &&
           context.get("lastElectedTime" + chosen) !== undefined
