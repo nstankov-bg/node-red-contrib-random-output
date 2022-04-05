@@ -43,7 +43,7 @@ module.exports = function (RED) {
     //check if the node is eligible for re-election
     if (context.get("ElectionBannedUntill" + outputNum) > Date.now()) {
       return false;
-    } else if (context.get("ElectionBannedUntill" + outputNum) < Date.now()) {
+    } else if(context.get("ElectionBannedUntill" + outputNum) < Date.now()) {
       return true;
     } else {
       return true;
@@ -95,36 +95,20 @@ module.exports = function (RED) {
           node.send(output);
         } else {
           node.log("node-red-contrib: Election has expired");
-          let lastElectedTimeObject = {};
-          for (let outputNum = -1; outputNum < numberOfOutputs; outputNum++) {
-            //Push outputNum to lastElectedTimeObject as key and current time as value
-            lastElectedTimeObject[outputNum] = context.get(
-              "lastElectedTime" + outputNum
-            );
-          }
-          //Sort lastElectedTimeObject by value
-          let sortedLastElectedTimeObject = Object.keys(
-            lastElectedTimeObject
-          ).sort(function (a, b) {
-            return lastElectedTimeObject[a] - lastElectedTimeObject[b];
-          });
-          //Check if the last node is eligible for re-election
-          if (
-            electNode(
-              context,
-              node,
-              sortedLastElectedTimeObject[0],
-              ReElectionBan
-            ) == true
-          ) {
-            output[sortedLastElectedTimeObject[0]] = msg;
+          if (context.get("lastElectedNode") + 1 > numberOfOutputs) {
+            restartOutputNode = 0;
           } else {
-            lastElected = context.get("lastElectedNode") + 1;
-            if (lastElected > numberOfOutputs) {
-              lastElected = 0;
-            }
-            output[lastElected] = msg;
+            restartOutputNode = context.get("lastElectedNode") + 1;
+          }
+          if (
+            electNode(context, node, restartOutputNode, ReElectionBan) == true
+          ) {
+            chosen = context.get("lastElectedNode");
+            output[chosen] = msg;
             node.send(output);
+          } else {
+            nextRestartNode = restartOutputNode + 1;
+            electNode(context, node, nextRestartNode, ReElectionBan);
           }
         }
       } else {
@@ -136,7 +120,7 @@ module.exports = function (RED) {
           }
           if (electNode(context, node, chosen, ReElectionBan) == true) {
             node.log("node-red-contrib: Elected node " + chosen);
-            break;
+            break
           } else {
             node.log("node-red-contrib: Node " + chosen + " is banned");
             electNode(context, node, chosen + 1, ReElectionBan);
