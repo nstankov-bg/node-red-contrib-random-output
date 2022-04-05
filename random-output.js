@@ -12,7 +12,6 @@ module.exports = function (RED) {
     ) {
       context.set("lastElectedNode", outputNum);
       context.set("lastElectedTime" + outputNum, Date.now());
-      //2m minutes to expire
       context.set(
         "ElectionBannedUntill" + outputNum,
         Date.now() + ReElectionBan
@@ -45,6 +44,8 @@ module.exports = function (RED) {
     if (context.get("ElectionBannedUntill" + outputNum) > Date.now()) {
       return false;
     } else if(context.get("ElectionBannedUntill" + outputNum) < Date.now()) {
+      return true;
+    } else {
       return true;
     }
   }
