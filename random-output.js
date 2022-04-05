@@ -1,18 +1,4 @@
 module.exports = function (RED) {
-  function resetElection(context,config, election) {
-    const numberOfOutputs = config.outputs - 1;
-    if (election === true) {
-      context.set("ResetElection", true);
-      for (let outputNum = -1; outputNum < numberOfOutputs; outputNum++) {
-        context.set(
-          context.get("ElectionBannedUntill" + outputNum), (Date.now() - 10000)
-        );
-        node.log("node-red-contrib: Election reset for output " + outputNum);
-      }
-      return true;
-    }
-  }
-
   function electNode(context, node, outputNum, ReElectionBan) {
     //Check if outputNum is eligible for re-election
     node.log(
@@ -81,7 +67,10 @@ module.exports = function (RED) {
       node.log("node-red-contrib: Number of outputs: " + (numberOfOutputs + 1));
 
       if (msg.topic == "ResetElectionBan") {
-        resetElection(context, config, true);
+        node.log("node-red-contrib: Reset Election Ban");
+        for (let i = 1; i <= numberOfOutputs; i++) {
+          context.set("ElectionBannedUntill" + i, 0);
+        }
       }
 
       if (context.get("lastElectedNode") !== undefined) {
