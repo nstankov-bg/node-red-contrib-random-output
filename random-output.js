@@ -7,7 +7,6 @@ module.exports = function (RED) {
       return true;
     }
   }
-  
   function electNode(context, node, outputNum, ReElectionBan) {
     //Check if outputNum is eligible for re-election
     node.log(
@@ -63,18 +62,20 @@ module.exports = function (RED) {
       node.log("------------------------------------------------------");
       node.log("node-red-contrib: Random Output Node created");
       node.log("node-red-contrib: Number of outputs: " + (numberOfOutputs + 1));
-      
-        //Check if there is an elected node
-        if (context.get("lastElectedNode") !== undefined) {
-          node.log(
-            "node-red-contrib: Elected node: " + context.get("lastElectedNode")
-          );
-          }
-          else {
-          node.log("node-red-contrib: No elected node");
-          //Elect the first node
-          electNode(context, node, 0, ReElectionBan);
+
+      let output = new Array(numberOfOutputs);
+      let chosen = 0;
+      //Check if there is an elected node
+      if (context.get("lastElectedNode") !== undefined) {
+        node.log(
+          "node-red-contrib: Elected node: " + context.get("lastElectedNode")
+        );
         }
+        else {
+        node.log("node-red-contrib: No elected node");
+        //Elect the first node
+        electNode(context, node, 0, ReElectionBan);
+      }
 
         chosen = context.get("lastElectedNode");
         output[chosen] = msg;
