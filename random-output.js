@@ -67,7 +67,7 @@ module.exports = function (RED) {
       if (context.get("lastElectedNode") !== undefined) {
         node.log(
           "node-red-contrib: Currently elected node: " +
-            context.get("lastElectedNode")
+            (context.get("lastElectedNode") + 1)
         );
         node.log(
           "node-red-contrib: Last elected time: " +
