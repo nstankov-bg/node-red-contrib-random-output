@@ -120,6 +120,7 @@ module.exports = function (RED) {
           }
           if (electNode(context, node, chosen, ReElectionBan) == true) {
             node.log("node-red-contrib: Elected node " + chosen);
+            break;
           } else {
             node.log("node-red-contrib: Node " + chosen + " is banned");
             electNode(context, node, chosen + 1, ReElectionBan);
