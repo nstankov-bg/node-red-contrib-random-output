@@ -1,0 +1,46 @@
+{
+    "name": "node-red-docker",
+    "version": "2.2.2",
+    "description": "Low-code programming for event-driven applications",
+    "homepage": "http://nodered.org",
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/node-red/node-red-docker.git"
+    },
+    "private": true,
+    "scripts": {
+        "start": "node $NODE_OPTIONS node_modules/node-red/red.js $FLOWS",
+        "debug": "node --inspect=0.0.0.0:9229 $NODE_OPTIONS node_modules/node-red/red.js $FLOWS",
+        "debug_brk": "node --inspect=0.0.0.0:9229 --inspect-brk $NODE_OPTIONS node_modules/node-red/red.js $FLOWS"
+    },
+    "contributors": [
+        {
+            "name": "Dave Conway-Jones"
+        },
+        {
+            "name": "Nick O'Leary"
+        },
+        {
+            "name": "James Thomas"
+        },
+        {
+            "name": "Raymond Mouthaan"
+        }
+    ],
+    "dependencies": {
+        "node-red": "2.2.2",
+        "node-red-contrib-button-events": "github:bartbutenaers/node-red-contrib-button-events",
+        "node-red-contrib-color-changer": "github:nstankov-bg/node-red-contrib-color-changer",
+        "node-red-contrib-controltimer": "^0.1.0",
+        "node-red-contrib-loop-processing": "^0.5.1",
+        "node-red-contrib-random-output": "github:nstankov-bg/node-red-contrib-random-output-advanced",
+        "node-red-contrib-random-output-advanced": "github:nstankov-bg/node-red-contrib-random-output-advanced",
+        "node-red-contrib-tuya-local": "github:subzero79/node-red-contrib-tuya-local",
+        "node-red-contrib-tuya-smart": "^1.2.0",
+        "node-red-contrib-ui-timelines-chart": "^0.1.8"
+    },
+    "engines": {
+        "node": ">=12"
+    }
+}

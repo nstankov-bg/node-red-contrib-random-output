@@ -4,20 +4,25 @@ gf:
 	git add .
 	git commit -m "fast commit"
 	git push
-	docker exec -it 92c5c4e94afe npm remove nstankov-bg/node-red-contrib-random-output-advanced
-	docker exec -it 92c5c4e94afe npm install nstankov-bg/node-red-contrib-random-output-advanced
-	docker restart 92c5c4e94afe
+	docker-compose exec -it churchlight npm remove nstankov-bg/node-red-contrib-random-output-advanced
+	docker-compose exec -it churchlight npm install nstankov-bg/node-red-contrib-random-output-advanced
+	docker-compose restart churchlight
 
 ni:
-	docker exec -it 92c5c4e94afe npm install nstankov-bg/node-red-contrib-random-output-advanced
-	docker restart 92c5c4e94afe
+	docker-compose exec -it churchlight npm install nstankov-bg/node-red-contrib-random-output-advanced
+	docker-compose restart churchlight
 
 nu: 
-	docker exec -it 92c5c4e94afe npm remove nstankov-bg/node-red-contrib-random-output-advanced
-	docker exec -it 92c5c4e94afe npm install nstankov-bg/node-red-contrib-random-output-advanced
-	docker restart 92c5c4e94afe
+	docker-compose exec -it churchlight npm remove nstankov-bg/node-red-contrib-random-output-advanced
+	docker-compose exec -it churchlight npm install nstankov-bg/node-red-contrib-random-output-advanced
+	docker-compose restart churchlight
 re:
-	docker restart 92c5c4e94afe
+	docker-compose restart churchlight
 
 ex:
-	docker exec -it 92c5c4e94afe sh
+	docker-compose exec -it churchlight sh
+
+up:
+	docker-compose up -d
+down:
+	docker-compose down
