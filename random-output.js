@@ -66,7 +66,9 @@ module.exports = function (RED) {
       node.log("node-red-contrib: Random Output Node created");
       node.log("node-red-contrib: Number of outputs: " + (numberOfOutputs + 1));
 
-      if (msg.payload === "reboot") {
+      //if msg.payload contains reboot
+      
+      if (msg.payload == "reboot") {
         for (let outputNum = -1; outputNum < numberOfOutputs; outputNum++) {
           context.set("ElectionBannedUntill" + outputNum, 0);
         }
