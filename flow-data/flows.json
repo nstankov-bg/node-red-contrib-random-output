@@ -1,0 +1,610 @@
+[
+    {
+        "id": "edfbbe017fece260",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "7af2916396268b4b",
+        "type": "tab",
+        "label": "Colors + Blinking",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "ce79ab6ed29c58d9",
+        "type": "function",
+        "z": "7af2916396268b4b",
+        "name": "SET/{{GLOBAL_COLORHEX}}",
+        "func": "let currentColor = flow.get(\"CurrentColor\");\nlet currentColorHex = flow.get(\"CurrentColorHex\");\n\nvar msg = {\"_msgid\":\"45151a359e6ce9b3\",\"payload\":{\"multiple\":true,\"data\":{\"20\":true,\"21\":\"colour\",\"22\":900,\"23\":0,\"24\":currentColorHex,\"25\":\"000e0d0000000000000000c80000\",\"26\":3}}}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1490,
+        "y": 340,
+        "wires": [
+            [
+                "cd6980a8c2e1ad09",
+                "115ada30.1743c6"
+            ]
+        ]
+    },
+    {
+        "id": "6faf1108467f3bc5",
+        "type": "function",
+        "z": "7af2916396268b4b",
+        "name": "ON/{{COLORHEX}}",
+        "func": "let currentColor = flow.get(\"CurrentColor\");\nlet currentColorHex = flow.get(\"CurrentColorHex\");\n\nvar msg = {\"_msgid\":\"45151a359e6ce9b3\",\"payload\":{\"multiple\":true,\"data\":{\"20\":true,\"21\":\"colour\",\"22\":900,\"23\":0,\"24\":currentColorHex,\"25\":\"000e0d0000000000000000c80000\",\"26\":0}}}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1130,
+        "y": 460,
+        "wires": [
+            [
+                "46857b13e8d3d1fe"
+            ]
+        ]
+    },
+    {
+        "id": "2aaf6f61f36990bf",
+        "type": "array-loop",
+        "z": "7af2916396268b4b",
+        "name": "array-loop",
+        "key": "al1a60a19a718526",
+        "keyType": "msg",
+        "reset": false,
+        "resetValue": "value-null",
+        "array": "array",
+        "arrayType": "msg",
+        "x": 690,
+        "y": 700,
+        "wires": [
+            [
+                "6faf1108467f3bc5"
+            ],
+            [
+                "061609fd9a9c47cd",
+                "2ae6f9b68bf2e753"
+            ]
+        ]
+    },
+    {
+        "id": "7013b9920477bb7c",
+        "type": "inject",
+        "z": "7af2916396268b4b",
+        "name": "msg.payload = \"1, 2, 3\"",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "1, 2, 3",
+        "payloadType": "str",
+        "x": 120,
+        "y": 700,
+        "wires": [
+            [
+                "9d832afe00b10485",
+                "6faf1108467f3bc5"
+            ]
+        ]
+    },
+    {
+        "id": "9d832afe00b10485",
+        "type": "change",
+        "z": "7af2916396268b4b",
+        "name": "split msg.payload by \", \"",
+        "rules": [
+            {
+                "t": "set",
+                "p": "array",
+                "pt": "msg",
+                "to": "$split(msg.payload, ', ')",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 370,
+        "y": 700,
+        "wires": [
+            [
+                "2aaf6f61f36990bf",
+                "7901b9b33b2177e0"
+            ]
+        ]
+    },
+    {
+        "id": "902b376f56a3d891",
+        "type": "function",
+        "z": "7af2916396268b4b",
+        "name": "return msg",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 770,
+        "y": 780,
+        "wires": [
+            [
+                "2aaf6f61f36990bf"
+            ]
+        ]
+    },
+    {
+        "id": "061609fd9a9c47cd",
+        "type": "delay",
+        "z": "7af2916396268b4b",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "3",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 600,
+        "y": 780,
+        "wires": [
+            [
+                "902b376f56a3d891"
+            ]
+        ]
+    },
+    {
+        "id": "2ae6f9b68bf2e753",
+        "type": "function",
+        "z": "7af2916396268b4b",
+        "name": "BLINK",
+        "func": "var msg = {\"_msgid\":\"45151a359e6ce9b3\",\"payload\":{\"multiple\":true,\"data\":{\"20\":true,\"21\":\"colour\",\"22\":\"1000\",\"23\":\"1000\",\"24\":\"00F002EE032A\",\"25\":\"000e0d0000000000000000c80000\",\"26\":2}}}\nvar msg2 = {\"_msgid\":\"45151a359e6ce9b3\",\"payload\":{\"multiple\":true,\"data\":{\"20\":false,\"21\":\"colour\",\"22\":\"700\",\"23\":\"700\",\"24\":\"00F002EE032A\",\"25\":\"000e0d0000000000000000c80000\",\"26\":1}}}\nvar msg3 = {\"_msgid\":\"45151a359e6ce9b3\",\"payload\":{\"multiple\":true,\"data\":{\"20\":true,\"21\":\"colour\",\"22\":\"1000\",\"23\":\"1000\",\"24\":\"00F002EE032A\",\"25\":\"000e0d0000000000000000c80000\",\"26\":2}}}\n\n\nreturn [msg, msg2, msg3];",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1150,
+        "y": 760,
+        "wires": [
+            [
+                "46857b13e8d3d1fe"
+            ]
+        ]
+    },
+    {
+        "id": "eb066c8ba955c4a1",
+        "type": "comment",
+        "z": "7af2916396268b4b",
+        "name": "BLINK/{{BLUE}}",
+        "info": "",
+        "x": 1140,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "7901b9b33b2177e0",
+        "type": "function",
+        "z": "7af2916396268b4b",
+        "name": "ON/BLUE",
+        "func": "var msg = {\"_msgid\":\"45151a359e6ce9b3\",\"payload\":{\"multiple\":true,\"data\":{\"20\":true,\"21\":\"colour\",\"24\":\"00F002EE032A\",\"25\":\"000e0d0000000000000000c80000\",\"26\":0}}}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1140,
+        "y": 720,
+        "wires": [
+            [
+                "46857b13e8d3d1fe"
+            ]
+        ]
+    },
+    {
+        "id": "8a8cfc0ba0900c5e",
+        "type": "comment",
+        "z": "7af2916396268b4b",
+        "name": "Repeater. Every \", \" means one repetition.",
+        "info": "",
+        "x": 260,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "0fc2a66801b2fbda",
+        "type": "comment",
+        "z": "7af2916396268b4b",
+        "name": "Creates the loop for every \", \" ",
+        "info": "",
+        "x": 700,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "46857b13e8d3d1fe",
+        "type": "random-output-advanced",
+        "z": "7af2916396268b4b",
+        "name": "",
+        "outputs": 2,
+        "useWeights": false,
+        "weights": [
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1"
+        ],
+        "x": 1510,
+        "y": 480,
+        "wires": [
+            [
+                "cd6980a8c2e1ad09",
+                "2d562bb71836f48c"
+            ],
+            [
+                "115ada30.1743c6",
+                "3e657c9833156a68"
+            ]
+        ]
+    },
+    {
+        "id": "115ada30.1743c6",
+        "type": "tuya-local",
+        "z": "7af2916396268b4b",
+        "devName": "Nikolay Bulb",
+        "devIp": "192.168.2.10",
+        "devId": "137013508cce4edc31ba",
+        "devKey": "205285c0cb98ea66",
+        "protocolVer": "3.3",
+        "renameSchema": "",
+        "filterCB": "",
+        "x": 1810,
+        "y": 520,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "cd6980a8c2e1ad09",
+        "type": "tuya-local",
+        "z": "7af2916396268b4b",
+        "devName": "Nikolay Bulb",
+        "devIp": "192.168.2.9",
+        "devId": "137013508cce4edc31fa",
+        "devKey": "318911f3d94f2472",
+        "protocolVer": "3.3",
+        "renameSchema": "",
+        "filterCB": "",
+        "x": 1810,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "01e9f2197d0043aa",
+        "type": "function",
+        "z": "7af2916396268b4b",
+        "name": "ColorPicker",
+        "func": "if (msg.topic === \"WHITE\") {\nflow.set(\"CurrentColor\", \"WHITE\")\nflow.set(\"CurrentColorHex\", \"0006000003E8\")\n}\nif (msg.topic === \"GREEN\") {\nflow.set(\"CurrentColor\", \"GREEN\")\nflow.set(\"CurrentColorHex\", \"007E03C0019A\")\n}\nif (msg.topic === \"PURPLE\") {\nflow.set(\"CurrentColor\", \"PURPLE\")\nflow.set(\"CurrentColorHex\", \"012902EE02D0\")\n}\nif (msg.topic === \"RED\") {\nflow.set(\"CurrentColor\", \"RED\")\nflow.set(\"CurrentColorHex\", \"0167033E0384\")\n}\n\nlet currentColor = flow.get(\"CurrentColor\");\nlet currentColorHex = flow.get(\"CurrentColorHex\");\n\nvar msg = {\"_msgid\":\"45151a359e6ce9b3\",\"payload\":{currentColor, currentColorHex}}\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 750,
+        "y": 360,
+        "wires": [
+            [
+                "ce79ab6ed29c58d9"
+            ]
+        ]
+    },
+    {
+        "id": "c715b6be7227a802",
+        "type": "inject",
+        "z": "7af2916396268b4b",
+        "name": "WHITE",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "topic": "WHITE",
+        "x": 560,
+        "y": 300,
+        "wires": [
+            [
+                "01e9f2197d0043aa"
+            ]
+        ]
+    },
+    {
+        "id": "bebfd6dbde8d72bc",
+        "type": "inject",
+        "z": "7af2916396268b4b",
+        "name": "GREEN",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "2",
+        "topic": "GREEN",
+        "x": 560,
+        "y": 340,
+        "wires": [
+            [
+                "01e9f2197d0043aa"
+            ]
+        ]
+    },
+    {
+        "id": "438a82549d13b88d",
+        "type": "inject",
+        "z": "7af2916396268b4b",
+        "name": "PURPLE",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "3",
+        "topic": "PURPLE",
+        "x": 560,
+        "y": 380,
+        "wires": [
+            [
+                "01e9f2197d0043aa"
+            ]
+        ]
+    },
+    {
+        "id": "0fc6fe69c8706ab0",
+        "type": "inject",
+        "z": "7af2916396268b4b",
+        "name": "RED",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "4",
+        "topic": "RED",
+        "x": 550,
+        "y": 420,
+        "wires": [
+            [
+                "01e9f2197d0043aa"
+            ]
+        ]
+    },
+    {
+        "id": "55e91a9fe52a934a",
+        "type": "comment",
+        "z": "7af2916396268b4b",
+        "name": "On loop end, trigger bulb into set color",
+        "info": "",
+        "x": 1130,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "34f563cd7ec5086c",
+        "type": "comment",
+        "z": "7af2916396268b4b",
+        "name": "On global color set, turn all bulbs off.",
+        "info": "",
+        "x": 1510,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "2d562bb71836f48c",
+        "type": "controltimer",
+        "z": "7af2916396268b4b",
+        "name": "",
+        "timerType": "delay",
+        "timerDurationUnit": "hour",
+        "timerDurationType": "num",
+        "timerDuration": 4,
+        "timerLoopTimeoutUnit": "second",
+        "timerLoopTimeoutType": "num",
+        "timerLoopTimeout": 0,
+        "loopTimeoutMessageType": "str",
+        "loopTimeoutMessage": "LOOP_TIMEOUT",
+        "timerMaxLoopIterationsType": "num",
+        "timerMaxLoopIterations": 0,
+        "loopMaxIterationsMessageType": "str",
+        "loopMaxIterationsMessage": "MAX_LOOP_ITERATIONS",
+        "isConsecutiveStartActionTimerResetAllowed": false,
+        "isRunningTimerProgressVisible": true,
+        "outputReceivedMessageOnTimerTrigger": true,
+        "outputReceivedMessageOnTimerHalt": true,
+        "startTimerOnReceivalOfUnknownMessage": true,
+        "resetTimerOnReceivalOfUnknownMessage": false,
+        "isDebugModeEnabled": false,
+        "timerTriggeredMessageType": "str",
+        "timerTriggeredMessage": "TIMER_TRIGGERED",
+        "timerHaltedMessageType": "str",
+        "timerHaltedMessage": "TIMER_HALTED",
+        "isStartActionEnabled": true,
+        "isStopActionEnabled": true,
+        "isResetActionEnabled": true,
+        "isPauseActionEnabled": true,
+        "isContinueActionEnabled": true,
+        "actionPropertyNameType": "str",
+        "actionPropertyName": "payload",
+        "startActionNameType": "str",
+        "startActionName": "START",
+        "stopActionNameType": "str",
+        "stopActionName": "STOP",
+        "resetActionNameType": "str",
+        "resetActionName": "RESET",
+        "pauseActionNameType": "str",
+        "pauseActionName": "PAUSE",
+        "continueActionNameType": "str",
+        "continueActionName": "CONTINUE",
+        "x": 1810,
+        "y": 260,
+        "wires": [
+            [
+                "9e0e29251f51b101"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "9e0e29251f51b101",
+        "type": "function",
+        "z": "7af2916396268b4b",
+        "name": "OFF",
+        "func": "let currentColor = flow.get(\"CurrentColor\");\nlet currentColorHex = flow.get(\"CurrentColorHex\");\n\nvar msg = {\"_msgid\":\"45151a359e6ce9b3\",\"payload\":{\"multiple\":true,\"data\":{\"20\":false}}}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1790,
+        "y": 320,
+        "wires": [
+            [
+                "cd6980a8c2e1ad09"
+            ]
+        ]
+    },
+    {
+        "id": "3e657c9833156a68",
+        "type": "controltimer",
+        "z": "7af2916396268b4b",
+        "name": "",
+        "timerType": "delay",
+        "timerDurationUnit": "hour",
+        "timerDurationType": "num",
+        "timerDuration": 4,
+        "timerLoopTimeoutUnit": "second",
+        "timerLoopTimeoutType": "num",
+        "timerLoopTimeout": 0,
+        "loopTimeoutMessageType": "str",
+        "loopTimeoutMessage": "LOOP_TIMEOUT",
+        "timerMaxLoopIterationsType": "num",
+        "timerMaxLoopIterations": 0,
+        "loopMaxIterationsMessageType": "str",
+        "loopMaxIterationsMessage": "MAX_LOOP_ITERATIONS",
+        "isConsecutiveStartActionTimerResetAllowed": false,
+        "isRunningTimerProgressVisible": true,
+        "outputReceivedMessageOnTimerTrigger": true,
+        "outputReceivedMessageOnTimerHalt": true,
+        "startTimerOnReceivalOfUnknownMessage": true,
+        "resetTimerOnReceivalOfUnknownMessage": false,
+        "isDebugModeEnabled": false,
+        "timerTriggeredMessageType": "str",
+        "timerTriggeredMessage": "TIMER_TRIGGERED",
+        "timerHaltedMessageType": "str",
+        "timerHaltedMessage": "TIMER_HALTED",
+        "isStartActionEnabled": true,
+        "isStopActionEnabled": true,
+        "isResetActionEnabled": true,
+        "isPauseActionEnabled": true,
+        "isContinueActionEnabled": true,
+        "actionPropertyNameType": "str",
+        "actionPropertyName": "payload",
+        "startActionNameType": "str",
+        "startActionName": "START",
+        "stopActionNameType": "str",
+        "stopActionName": "STOP",
+        "resetActionNameType": "str",
+        "resetActionName": "RESET",
+        "pauseActionNameType": "str",
+        "pauseActionName": "PAUSE",
+        "continueActionNameType": "str",
+        "continueActionName": "CONTINUE",
+        "x": 1810,
+        "y": 420,
+        "wires": [
+            [
+                "9bc6069321094402"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "9bc6069321094402",
+        "type": "function",
+        "z": "7af2916396268b4b",
+        "name": "OFF",
+        "func": "let currentColor = flow.get(\"CurrentColor\");\nlet currentColorHex = flow.get(\"CurrentColorHex\");\n\nvar msg = {\"_msgid\":\"45151a359e6ce9b3\",\"payload\":{\"multiple\":true,\"data\":{\"20\":false}}}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1790,
+        "y": 480,
+        "wires": [
+            [
+                "115ada30.1743c6"
+            ]
+        ]
+    },
+    {
+        "id": "b362a6d5cffebefb",
+        "type": "comment",
+        "z": "7af2916396268b4b",
+        "name": "Election Controlled Randomizer",
+        "info": "",
+        "x": 1490,
+        "y": 440,
+        "wires": []
+    }
+]

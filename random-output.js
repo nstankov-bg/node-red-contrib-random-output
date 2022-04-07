@@ -57,7 +57,7 @@ module.exports = function (RED) {
 
     //4 hours
     const ReElectionBan = 4 * 60 * 60 * 1000; //4 hours
-    const ElectionTime = 20000; //20 seconds
+    const ElectionTime = 5000; //5 seconds
 
     const numberOfOutputs = config.outputs - 1;
 

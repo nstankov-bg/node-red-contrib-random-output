@@ -1,6 +1,8 @@
 version: "3.7"
 services:
   churchlight:
-    image: nikoogle/church-lights:0.3-x86
+    image: nikoogle/church-lights:0.4-x86
     ports:
       - "1880:1880"
+    volumes:
+      - ./flow-data:/data
