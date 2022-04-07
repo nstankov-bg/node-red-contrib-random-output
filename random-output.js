@@ -66,83 +66,73 @@ module.exports = function (RED) {
       node.log("node-red-contrib: Random Output Node created");
       node.log("node-red-contrib: Number of outputs: " + (numberOfOutputs + 1));
 
-      //if msg.payload contains reboot
-      
-      if (msg.payload == "reboot") {
-        for (let outputNum = -1; outputNum < numberOfOutputs; outputNum++) {
-          context.set("ElectionBannedUntill" + outputNum, 0);
-        }
+      if (context.get("lastElectedNode") !== undefined) {
+        node.log(
+          "node-red-contrib: Currently elected node: " +
+            context.get("lastElectedNode")
+        );
+        node.log(
+          "node-red-contrib: Last elected time: " +
+            context.get("lastElectedTime" + context.get("lastElectedNode"))
+        );
+        node.log("node-red-contrib: Current Unix Time: " + Date.now());
       } else {
-        if (context.get("lastElectedNode") !== undefined) {
-          node.log(
-            "node-red-contrib: Currently elected node: " +
-              context.get("lastElectedNode")
-          );
-          node.log(
-            "node-red-contrib: Last elected time: " +
-              context.get("lastElectedTime" + context.get("lastElectedNode"))
-          );
-          node.log("node-red-contrib: Current Unix Time: " + Date.now());
-        } else {
-          node.log("node-red-contrib: No node has been elected yet");
-        }
-        node.log("------------------------------------------------------");
+        node.log("node-red-contrib: No node has been elected yet");
+      }
+      node.log("------------------------------------------------------");
 
-        let output = new Array(numberOfOutputs);
-        let chosen;
+      let output = new Array(numberOfOutputs);
+      let chosen;
+      if (
+        context.get("lastElectedNode") !== "" &&
+        context.get("lastElectedNode") !== undefined
+      ) {
+        chosen = context.get("lastElectedNode");
         if (
-          context.get("lastElectedNode") !== "" &&
-          context.get("lastElectedNode") !== undefined
+          context.get("lastElectedTime" + chosen) > Date.now() - ElectionTime &&
+          context.get("lastElectedTime" + chosen) !== undefined
         ) {
           chosen = context.get("lastElectedNode");
+          output[chosen] = msg;
+          node.send(output);
+        } else {
+          node.log("node-red-contrib: Election has expired");
+          if (context.get("lastElectedNode") + 1 > numberOfOutputs) {
+            restartOutputNode = 0;
+          } else {
+            restartOutputNode = context.get("lastElectedNode") + 1;
+          }
           if (
-            context.get("lastElectedTime" + chosen) >
-              Date.now() - ElectionTime &&
-            context.get("lastElectedTime" + chosen) !== undefined
+            electNode(context, node, restartOutputNode, ReElectionBan) == true
           ) {
             chosen = context.get("lastElectedNode");
             output[chosen] = msg;
             node.send(output);
           } else {
-            node.log("node-red-contrib: Election has expired");
-            if (context.get("lastElectedNode") + 1 > numberOfOutputs) {
-              restartOutputNode = 0;
-            } else {
-              restartOutputNode = context.get("lastElectedNode") + 1;
-            }
-            if (
-              electNode(context, node, restartOutputNode, ReElectionBan) == true
-            ) {
-              chosen = context.get("lastElectedNode");
-              output[chosen] = msg;
-              node.send(output);
-            } else {
-              nextRestartNode = restartOutputNode + 1;
-              electNode(context, node, nextRestartNode, ReElectionBan);
-            }
+            nextRestartNode = restartOutputNode + 1;
+            electNode(context, node, nextRestartNode, ReElectionBan);
           }
-        } else {
-          for (let outputNum = -1; outputNum < numberOfOutputs; outputNum++) {
-            chosen = outputNum;
-            //Make sure that chosen is a positive number
-            if (chosen < 0) {
-              chosen = chosen + 1;
-            }
-            if (electNode(context, node, chosen, ReElectionBan) == true) {
-              node.log("node-red-contrib: Elected node " + chosen);
-              break;
-            } else {
-              node.log("node-red-contrib: Node " + chosen + " is banned");
-              electNode(context, node, chosen + 1, ReElectionBan);
-            }
-          }
-          chosen = context.get("lastElectedNode");
-          output[chosen] = msg;
-          node.send(output);
         }
+      } else {
+        for (let outputNum = -1; outputNum < numberOfOutputs; outputNum++) {
+          chosen = outputNum;
+          //Make sure that chosen is a positive number
+          if (chosen < 0) {
+            chosen = chosen + 1;
+          }
+          if (electNode(context, node, chosen, ReElectionBan) == true) {
+            node.log("node-red-contrib: Elected node " + chosen);
+            break;
+          } else {
+            node.log("node-red-contrib: Node " + chosen + " is banned");
+            electNode(context, node, chosen + 1, ReElectionBan);
+          }
+        }
+        chosen = context.get("lastElectedNode");
+        output[chosen] = msg;
+        node.send(output);
       }
     });
   }
-
   RED.nodes.registerType("random-output-advanced", RandomOutputNode);
 };
