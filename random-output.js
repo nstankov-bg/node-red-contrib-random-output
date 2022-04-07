@@ -71,6 +71,7 @@ module.exports = function (RED) {
       if (msg.payload === "reboot") {
         for (let outputNum = -1; outputNum < numberOfOutputs; outputNum++) {
           context.set("ElectionBannedUntill" + outputNum, 0);
+          context.set("lastElectedNode", 0);
         }
       } else {
         if (context.get("lastElectedNode") !== undefined) {
