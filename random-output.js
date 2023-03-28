@@ -24,31 +24,40 @@ module.exports = function (RED) {
 
     const ReElectionBan = 4 * 60 * 60 * 1000; // 4 hours
     const ElectionTime = 2500; // 2.5 seconds
-    const numberOfOutputs = config.outputs - 1;
+    const numberOfOutputs = parseInt(config.outputs, 10) - 1;
+
+    if (isNaN(numberOfOutputs) || numberOfOutputs < 0) {
+      node.error("Invalid number of outputs provided");
+      return;
+    }
 
     node.on("input", function (msg) {
-      const lastElectedNode = context.get("lastElectedNode");
-      let output = Array(numberOfOutputs).fill(null);
-      let chosen;
+      try {
+        const lastElectedNode = context.get("lastElectedNode");
+        let output = Array(numberOfOutputs).fill(null);
+        let chosen;
 
-      if (lastElectedNode !== undefined && lastElectedNode !== "") {
-        chosen = lastElectedNode;
-        if (context.get("lastElectedTime" + chosen) > Date.now() - ElectionTime) {
-          output[chosen] = msg;
-          node.send(output);
-        } else {
-          const nextNode = (chosen + 1) % (numberOfOutputs + 1);
-          electNode(context, node, nextNode, ReElectionBan) && node.send(output);
-        }
-      } else {
-        for (let outputNum = 0; outputNum <= numberOfOutputs; outputNum++) {
-          if (electNode(context, node, outputNum, ReElectionBan)) {
-            chosen = context.get("lastElectedNode");
+        if (lastElectedNode !== undefined && lastElectedNode !== "") {
+          chosen = lastElectedNode;
+          if (context.get("lastElectedTime" + chosen) > Date.now() - ElectionTime) {
             output[chosen] = msg;
             node.send(output);
-            break;
+          } else {
+            const nextNode = (chosen + 1) % (numberOfOutputs + 1);
+            electNode(context, node, nextNode, ReElectionBan) && node.send(output);
+          }
+        } else {
+          for (let outputNum = 0; outputNum <= numberOfOutputs; outputNum++) {
+            if (electNode(context, node, outputNum, ReElectionBan)) {
+              chosen = context.get("lastElectedNode");
+              output[chosen] = msg;
+              node.send(output);
+              break;
+            }
           }
         }
+      } catch (error) {
+        node.error(`Unexpected error occurred: ${error.message}`);
       }
     });
   }
