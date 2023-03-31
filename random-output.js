@@ -22,8 +22,8 @@ module.exports = function (RED) {
     const node = this;
     const context = this.context();
 
-    const ReElectionBan = 4 * 60 * 60 * 1000; // 4 hours
-    const ElectionTime = 2500; // 2.5 seconds
+    const ReElectionBan = parseInt(config.reelectionBan, 10) || (4 * 60 * 60 * 1000); // 4 hours
+    const ElectionTime = parseInt(config.electionTime, 10) || 2500; // 2.5 seconds
     const numberOfOutputs = parseInt(config.outputs, 10) - 1;
 
     if (isNaN(numberOfOutputs) || numberOfOutputs < 0) {
