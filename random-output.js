@@ -55,9 +55,8 @@ module.exports = function (RED) {
     let node = this;
     let context = this.context();
 
-    //4 hours
-    const ReElectionBan = 4 * 60 * 60 * 1000; //4 hours
-    const ElectionTime = 2500; //2.5 seconds
+    const ReElectionBan = config.reelectionBan * 1000;
+    const ElectionTime = config.electionTime * 1000;
 
     const numberOfOutputs = config.outputs - 1;
 
