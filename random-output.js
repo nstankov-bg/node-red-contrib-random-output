@@ -3,12 +3,19 @@ module.exports = function (RED) {
     if (checkReelectionEligibility(context, outputNum)) {
       context.set("lastElectedNode", outputNum);
       context.set("lastElectedTime" + outputNum, Date.now());
-      context.set("ElectionBannedUntill" + outputNum, Date.now() + ReElectionBan);
-      node.log(`node-red-contrib: Node ${outputNum} is eligible for re-election`);
+      context.set(
+        "ElectionBannedUntill" + outputNum,
+        Date.now() + ReElectionBan
+      );
+      node.log(`Node ${outputNum} is eligible for re-election`);
       return true;
     } else {
-      node.log(`node-red-contrib: Node ${outputNum} will be eligible at: ${context.get("ElectionBannedUntill" + outputNum)}`);
-      node.log(`node-red-contrib: ${outputNum} is not eligible for re-election`);
+      node.log(
+        `Node ${outputNum} will be eligible at: ${context.get(
+          "ElectionBannedUntill" + outputNum
+        )}`
+      );
+      node.log(`${outputNum} is not eligible for re-election`);
       return false;
     }
   }
@@ -22,7 +29,8 @@ module.exports = function (RED) {
     const node = this;
     const context = this.context();
 
-    const ReElectionBan = parseInt(config.reelectionBan, 10) || (4 * 60 * 60 * 1000); // 4 hours
+    const ReElectionBan =
+      parseInt(config.reelectionBan, 10) || 4 * 60 * 60 * 1000; // 4 hours
     const ElectionTime = parseInt(config.electionTime, 10) || 2500; // 2.5 seconds
     const numberOfOutputs = parseInt(config.outputs, 10) - 1;
 
@@ -34,17 +42,23 @@ module.exports = function (RED) {
     node.on("input", function (msg) {
       try {
         const lastElectedNode = context.get("lastElectedNode");
-        let output = Array(numberOfOutputs).fill(null);
+        let output = Array(numberOfOutputs + 1).fill(null);
         let chosen;
 
         if (lastElectedNode !== undefined && lastElectedNode !== "") {
           chosen = lastElectedNode;
-          if (context.get("lastElectedTime" + chosen) > Date.now() - ElectionTime) {
+          if (
+            context.get("lastElectedTime" + chosen) >
+            Date.now() - ElectionTime
+          ) {
             output[chosen] = msg;
             node.send(output);
           } else {
             const nextNode = (chosen + 1) % (numberOfOutputs + 1);
-            electNode(context, node, nextNode, ReElectionBan) && node.send(output);
+            if (electNode(context, node, nextNode, ReElectionBan)) {
+              output[nextNode] = msg;
+              node.send(output);
+            }
           }
         } else {
           for (let outputNum = 0; outputNum <= numberOfOutputs; outputNum++) {
