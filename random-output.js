@@ -80,7 +80,7 @@ module.exports = function (RED) {
       }
       node.log("------------------------------------------------------");
 
-      let output = new Array(numberOfOutputs);
+      let output = new Array(numberOfOutputs + 1);
       let chosen;
       if (
         context.get("lastElectedNode") !== "" &&
