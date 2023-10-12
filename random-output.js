@@ -37,6 +37,7 @@ module.exports = function (RED) {
       // Send the end command to the specified output
       node.send(outputArray);
     }
+  }
   
 
   function startTimer(context, node, outputNum, timerDuration, startCommand, endCommand) {
