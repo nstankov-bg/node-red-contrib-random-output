@@ -91,8 +91,8 @@ module.exports = function (RED) {
     // Timer duration in milliseconds from config
     const TimerDuration = config.timerDuration * 1000;
   
-    // Validate end commands
-    const EndCommands = config.endCommand;
+    // End command is; {"payload":{"multiple":false,"data":{"20":false}}};
+    const EndCommands = {"payload":{"multiple":false,"data":{"20":false}}};
   
     // Initialize context variables if they are undefined
     context.set("lastElectedNode", context.get("lastElectedNode") || "");
@@ -149,11 +149,7 @@ module.exports = function (RED) {
         node.send(output);
       }
   
-      if (EndCommands[chosen]) {
-        startTimer(context, node, chosen, TimerDuration, msg, EndCommands[chosen]);
-      } else {
-        node.error(`Invalid command configuration for output ${chosen}`);
-      }
+      startTimer(context, node, chosen, TimerDuration, msg, EndCommands);
     });
   }  
   
