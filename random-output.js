@@ -10,10 +10,14 @@ module.exports = function (RED) {
     }
   }
 
-  function startTimer(context, node, outputNum, timerDuration, command) {
+  function startTimer(context, node, outputNum, timerDuration, startCommand, endCommand) {
+    // Execute the start command
+    executeCommand(context, node, outputNum, startCommand);
+  
     setTimeout(() => {
-      node.log(`Timer expired for output ${outputNum}. Executing second command.`);
-      executeCommand(context, node, outputNum, command);
+      node.log(`Timer expired for output ${outputNum}. Executing end command.`);
+      // Execute the end command
+      executeCommand(context, node, outputNum, endCommand);
     }, timerDuration);
   }
 
@@ -53,16 +57,19 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
     let node = this;
     let context = this.context();
-    
+
+    // Assume these are arrays for each output
+    const StartCommands = config.startCommand;
+    const EndCommands = config.endCommand;
+    const TimerDurations = config.timerDuration.map(duration => duration * 1000);  // Convert to milliseconds
+
+
     // Initialize context variables if they are undefined
     context.set("lastElectedNode", context.get("lastElectedNode") || "");
 
 
     const ReElectionBan = config.reelectionBan * 1000;
     const ElectionTime = config.electionTime * 1000;
-    const Commands = config.commands; // Assume this is an array of commands for each output
-    const TimerDurations = config.timerDurations; // Assume this is an array of timer durations for each output
-
     const numberOfOutputs = Math.min(config.outputs - 1, 300); // Limit to 300 outputs
 
     node.on("input", function (msg) {
@@ -108,11 +115,7 @@ module.exports = function (RED) {
         node.send(output);
       }
 
-      // Execute the command on the chosen output
-      executeCommand(context, node, chosen, Commands[chosen]);
-
-      // Start a timer for the chosen output
-      startTimer(context, node, chosen, TimerDurations[chosen], Commands[chosen]);
+      startTimer(context, node, chosen, TimerDurations[chosen], StartCommands[chosen], EndCommands[chosen]);
     });
   }
   

@@ -3,6 +3,9 @@
     category: "function",
     color: "#E2D96E",
     defaults: {
+      startCommand: { value: "" },
+      endCommand: { value: "" },
+      timerDuration: { value: 0 },
       name: { value: "" },
       outputs: { value: 1, validate: RED.validators.number() },
       useWeights: { value: false },
@@ -27,6 +30,18 @@
 </script>
 
 <script type="text/html" data-template-name="random-output-advanced">
+  <div class="form-row">
+    <label for="node-input-timerDuration">Timer Duration (seconds)</label>
+    <input type="number" id="node-input-timerDuration" placeholder="Timer Duration" min="0" />
+  </div>  
+  <div class="form-row">
+    <label for="node-input-startCommand">Start Command</label>
+    <input type="text" id="node-input-startCommand" placeholder="Start command" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-endCommand">End Command</label>
+    <input type="text" id="node-input-endCommand" placeholder="End command" />
+  </div>  
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
     <input type="text" id="node-input-name" placeholder="Name" />
