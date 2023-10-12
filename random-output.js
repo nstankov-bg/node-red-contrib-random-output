@@ -1,30 +1,34 @@
 module.exports = function (RED) {
+  
+  // Helper functions
+  function executeCommand(context, node, outputNum, command) {
+    if (command) {
+      node.log(`Executing command "${command}" on output ${outputNum}`);
+      let outputData = context.get(`outputData${outputNum}`) || {};
+      outputData.lastCommandExecutedTime = Date.now();
+      context.set(`outputData${outputNum}`, outputData);
+    }
+  }
+
+  function startTimer(context, node, outputNum, timerDuration, command) {
+    setTimeout(() => {
+      node.log(`Timer expired for output ${outputNum}. Executing second command.`);
+      executeCommand(context, node, outputNum, command);
+    }, timerDuration);
+  }
+
+
   function electNode(context, node, outputNum, ReElectionBan) {
-    //Check if outputNum is eligible for re-election
     node.log(
       "node-red-contrib: Checking if output " +
         outputNum +
         " is eligible for re-election"
     );
-    if (
-      checkReelectionEligibility(context, outputNum, node, ReElectionBan) ==
-      true
-    ) {
+    if (checkReelectionEligibility(context, outputNum) == true) {
       context.set("lastElectedNode", outputNum);
       context.set("lastElectedTime" + outputNum, Date.now());
-      context.set(
-        "ElectionBannedUntill" + outputNum,
-        Date.now() + ReElectionBan
-      );
-      node.log(
-        "node-red-contrib: Node " + outputNum + " is eligible for re-election"
-      );
-      node.log(
-        "node-red-contrib: Elected node " +
-          context.get("lastElectedNode") +
-          " at " +
-          context.get("lastElectedTime" + outputNum)
-      );
+      context.set("ElectionBannedUntill" + outputNum, Date.now() + ReElectionBan);
+      node.log("node-red-contrib: Node " + outputNum + " is eligible for re-election");
       return true;
     } else {
       node.log(
@@ -33,18 +37,13 @@ module.exports = function (RED) {
           " will be eligable at: " +
           context.get("ElectionBannedUntill" + outputNum)
       );
-      node.log(
-        "node-red-contrib: " + outputNum + " is not eligible for re-election"
-      );
       return false;
     }
   }
+
   function checkReelectionEligibility(context, outputNum) {
-    //check if the node is eligible for re-election
     if (context.get("ElectionBannedUntill" + outputNum) > Date.now()) {
       return false;
-    } else if (context.get("ElectionBannedUntill" + outputNum) < Date.now()) {
-      return true;
     } else {
       return true;
     }
@@ -54,84 +53,68 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
     let node = this;
     let context = this.context();
+    
+    // Initialize context variables if they are undefined
+    context.set("lastElectedNode", context.get("lastElectedNode") || "");
+
 
     const ReElectionBan = config.reelectionBan * 1000;
     const ElectionTime = config.electionTime * 1000;
+    const Commands = config.commands; // Assume this is an array of commands for each output
+    const TimerDurations = config.timerDurations; // Assume this is an array of timer durations for each output
 
-    const numberOfOutputs = config.outputs - 1;
+    const numberOfOutputs = Math.min(config.outputs - 1, 300); // Limit to 300 outputs
 
     node.on("input", function (msg) {
-      node.log("------------------------------------------------------");
-      node.log("node-red-contrib: Random Output Node created");
-      node.log("node-red-contrib: Number of outputs: " + (numberOfOutputs + 1));
-
-      if (context.get("lastElectedNode") !== undefined) {
-        node.log(
-          "node-red-contrib: Currently elected node: " +
-            context.get("lastElectedNode")
-        );
-        node.log(
-          "node-red-contrib: Last elected time: " +
-            context.get("lastElectedTime" + context.get("lastElectedNode"))
-        );
-        node.log("node-red-contrib: Current Unix Time: " + Date.now());
-      } else {
-        node.log("node-red-contrib: No node has been elected yet");
-      }
-      node.log("------------------------------------------------------");
-
+      // Your existing logic here
       let output = new Array(numberOfOutputs + 1);
       let chosen;
-      if (
-        context.get("lastElectedNode") !== "" &&
-        context.get("lastElectedNode") !== undefined
-      ) {
+      if (context.get("lastElectedNode") !== "" && context.get("lastElectedNode") !== undefined) {
         chosen = context.get("lastElectedNode");
-        if (
-          context.get("lastElectedTime" + chosen) > Date.now() - ElectionTime &&
-          context.get("lastElectedTime" + chosen) !== undefined
-        ) {
+        if (context.get("lastElectedTime" + chosen) > Date.now() - ElectionTime &&
+          context.get("lastElectedTime" + chosen) !== undefined) {
           chosen = context.get("lastElectedNode");
           output[chosen] = msg;
           node.send(output);
         } else {
           node.log("node-red-contrib: Election has expired");
+          let restartOutputNode;
           if (context.get("lastElectedNode") + 1 > numberOfOutputs) {
             restartOutputNode = 0;
           } else {
             restartOutputNode = context.get("lastElectedNode") + 1;
           }
-          if (
-            electNode(context, node, restartOutputNode, ReElectionBan) == true
-          ) {
+          if (electNode(context, node, restartOutputNode, ReElectionBan) == true) {
             chosen = context.get("lastElectedNode");
             output[chosen] = msg;
             node.send(output);
           } else {
-            nextRestartNode = restartOutputNode + 1;
+            let nextRestartNode = restartOutputNode + 1;
             electNode(context, node, nextRestartNode, ReElectionBan);
           }
         }
       } else {
-        for (let outputNum = -1; outputNum < numberOfOutputs; outputNum++) {
+        for (let outputNum = 0; outputNum <= numberOfOutputs; outputNum++) {
           chosen = outputNum;
-          //Make sure that chosen is a positive number
-          if (chosen < 0) {
-            chosen = chosen + 1;
-          }
           if (electNode(context, node, chosen, ReElectionBan) == true) {
             node.log("node-red-contrib: Elected node " + chosen);
             break;
           } else {
             node.log("node-red-contrib: Node " + chosen + " is banned");
-            electNode(context, node, chosen + 1, ReElectionBan);
           }
         }
         chosen = context.get("lastElectedNode");
         output[chosen] = msg;
         node.send(output);
       }
+
+      // Execute the command on the chosen output
+      executeCommand(context, node, chosen, Commands[chosen]);
+
+      // Start a timer for the chosen output
+      startTimer(context, node, chosen, TimerDurations[chosen], Commands[chosen]);
     });
   }
+  
   RED.nodes.registerType("random-output-advanced", RandomOutputNode);
 };
