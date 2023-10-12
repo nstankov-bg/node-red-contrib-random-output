@@ -65,6 +65,10 @@ module.exports = function (RED) {
     const StartCommands = Array.isArray(config.startCommand) ? config.startCommand : [];
     const EndCommands = Array.isArray(config.endCommand) ? config.endCommand : [];
   
+    // Log for debugging
+    node.log(`StartCommands: ${JSON.stringify(StartCommands)}`);
+    node.log(`EndCommands: ${JSON.stringify(EndCommands)}`);
+
     // Initialize context variables if they are undefined
     context.set("lastElectedNode", context.get("lastElectedNode") || "");
   
