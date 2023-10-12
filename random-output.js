@@ -51,9 +51,9 @@ module.exports = function (RED) {
       let outputData = context.get(`outputData${outputNum}`) || {};
       let lastCommandExecutedTime = outputData.lastCommandExecutedTime || 0;
 
-      if (Date.now() - lastCommandExecutedTime < 30000) {
+      if (Date.now() - lastCommandExecutedTime < 5000) {
         node.log(
-          `Command already sent to output ${outputNum} within the last 30 seconds. Skipping.`
+          `Command already sent to output ${outputNum} within the last 5 seconds. Skipping.`
         );
         return;
       } else {
