@@ -1,6 +1,6 @@
 module.exports = function (RED) {
   
-  function executeCommand(context, node, outputNum, command) {
+  function executeCommand(context, node, outputNum, command, end) {
     if (command) {
       node.log(`Executing command on output ${outputNum}: ${JSON.stringify(command)}`);
   
@@ -21,17 +21,32 @@ module.exports = function (RED) {
       // Send the command to the specified output
       node.send(outputArray);
     }
-  }
+  
+    if (end) {
+      node.log(`Executing end command on output ${outputNum}: ${JSON.stringify(end)}`);
+  
+      // Create an output array filled with `null`
+      let outputArray = Array(outputNum + 1).fill(null);
+  
+      // Define the end command as a JSON object
+      let endCommandObject = {"payload":{"multiple":false,"data":{"20":false}}};
+  
+      // Place the end command object at the `outputNum` index
+      outputArray[outputNum] = endCommandObject;
+  
+      // Send the end command to the specified output
+      node.send(outputArray);
+    }
   
 
   function startTimer(context, node, outputNum, timerDuration, startCommand, endCommand) {
     // Execute the start command
-    executeCommand(context, node, outputNum, startCommand);
+    executeCommand(context, node, outputNum, startCommand, end=false);
   
     setTimeout(() => {
       node.log(`Timer expired for output ${outputNum}. Executing end command.`);
       // Execute the end command
-      executeCommand(context, node, outputNum, endCommand);
+      executeCommand(context, node, outputNum, endCommand='', end=true);
     }, timerDuration);
   }
 
