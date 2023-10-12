@@ -120,50 +120,50 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
     let node = this;
     let context = this.context();
-
+  
     // Initialize context variables if they are undefined
     context.set("lastElectedNode", context.get("lastElectedNode") || "");
-
+  
     const ReElectionBan = config.reelectionBan * 1000;
     const TimerDuration = ReElectionBan + 5000;
     const EndCommands = { payload: { multiple: false, data: { 20: false } } };
-
+  
     const ElectionTime = config.electionTime * 1000;
     const numberOfOutputs = Math.min(config.outputs - 1, 300); // Limit to 300 outputs
-
+  
     node.on("input", function (msg) {
       let output = new Array(numberOfOutputs + 1);
       let chosen;
-
+  
       if (
         context.get("lastElectedNode") !== "" &&
         context.get("lastElectedNode") !== undefined
       ) {
         chosen = context.get("lastElectedNode");
-
+  
         if (
           context.get("lastElectedTime" + chosen) > Date.now() - ElectionTime &&
           context.get("lastElectedTime" + chosen) !== undefined
         ) {
           chosen = context.get("lastElectedNode");
           output[chosen] = msg;
-          node.send(output);
+          startTimer(context, node, chosen, TimerDuration, msg, EndCommands);
         } else {
           node.log("node-red-contrib: Election has expired");
           let restartOutputNode;
-
+  
           if (context.get("lastElectedNode") + 1 > numberOfOutputs) {
             restartOutputNode = 0;
           } else {
             restartOutputNode = context.get("lastElectedNode") + 1;
           }
-
+  
           if (
             electNode(context, node, restartOutputNode, ReElectionBan) === true
           ) {
             chosen = context.get("lastElectedNode");
             output[chosen] = msg;
-            node.send(output);
+            startTimer(context, node, chosen, TimerDuration, msg, EndCommands);
           } else {
             let nextRestartNode = restartOutputNode + 1;
             electNode(context, node, nextRestartNode, ReElectionBan);
@@ -172,7 +172,7 @@ module.exports = function (RED) {
       } else {
         for (let outputNum = 0; outputNum <= numberOfOutputs; outputNum++) {
           chosen = outputNum;
-
+  
           if (electNode(context, node, chosen, ReElectionBan) === true) {
             node.log("node-red-contrib: Elected node " + chosen);
             break;
@@ -180,15 +180,13 @@ module.exports = function (RED) {
             node.log("node-red-contrib: Node " + chosen + " is banned");
           }
         }
-
+  
         chosen = context.get("lastElectedNode");
-        output[chosen] = msg;
-        node.send(output);
+        startTimer(context, node, chosen, TimerDuration, msg, EndCommands);
       }
-
-      startTimer(context, node, chosen, TimerDuration, msg, EndCommands);
     });
   }
+  
 
   RED.nodes.registerType("random-output-advanced", RandomOutputNode);
 };
