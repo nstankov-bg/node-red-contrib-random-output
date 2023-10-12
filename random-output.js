@@ -1,55 +1,57 @@
 module.exports = function (RED) {
   
-  function executeCommand(context, node, outputNum, command, end) {
+  function sendCommand(context, node, outputNum, commandObject) {
+    // Update the context data
+    let outputData = context.get(`outputData${outputNum}`) || {};
+    outputData.lastCommandExecutedTime = Date.now();
+    context.set(`outputData${outputNum}`, outputData);
+  
+    if (typeof outputNum === 'undefined' || outputNum === null) {
+      node.error('outputNum is undefined or null');
+      return;
+    }
+  
+    // Create an output array filled with `null`
+    let outputArray = Array(outputNum + 1).fill(null);
+  
+    // Place the message object at the `outputNum` index
+    outputArray[outputNum] = commandObject;
+  
+    // Send the command to the specified output
+    node.send(outputArray);
+  }
+  
+  function executeCommand(context, node, outputNum, command, end=false) {
     if (command) {
       node.log(`Executing command on output ${outputNum}: ${JSON.stringify(command)}`);
-  
-      // Update the context data
-      let outputData = context.get(`outputData${outputNum}`) || {};
-      outputData.lastCommandExecutedTime = Date.now();
-      context.set(`outputData${outputNum}`, outputData);
-  
-      // Create an output array filled with `null`
-      let outputArray = Array(outputNum + 1).fill(null);
   
       // Make sure the command is in the expected message object format with a payload property
       let messageObject = (typeof command === 'object' && command.payload !== undefined) ? command : { payload: command };
   
-      // Place the message object at the `outputNum` index
-      outputArray[outputNum] = messageObject;
-  
-      // Send the command to the specified output
-      node.send(outputArray);
+      sendCommand(context, node, outputNum, messageObject);
     }
   
     if (end) {
       node.log(`Executing end command on output ${outputNum}: ${JSON.stringify(end)}`);
   
-      // Create an output array filled with `null`
-      let outputArray = Array(outputNum + 1).fill(null);
-  
       // Define the end command as a JSON object
       let endCommandObject = {"payload":{"multiple":false,"data":{"20":false}}};
   
-      // Place the end command object at the `outputNum` index
-      outputArray[outputNum] = endCommandObject;
-  
-      // Send the end command to the specified output
-      node.send(outputArray);
+      sendCommand(context, node, outputNum, endCommandObject);
     }
   }
   
-
-  function startTimer(context, node, outputNum, timerDuration, startCommand, endCommand) {
+  function startTimer(context, node, outputNum, timerDuration, startCommand, endCommand=false) {
     // Execute the start command
-    executeCommand(context, node, outputNum, startCommand, end=false);
+    executeCommand(context, node, outputNum, startCommand);
   
     setTimeout(() => {
       node.log(`Timer expired for output ${outputNum}. Executing end command.`);
       // Execute the end command
-      executeCommand(context, node, outputNum, endCommand='', end=true);
+      executeCommand(context, node, outputNum, null, end=true);
     }, timerDuration);
   }
+  
 
 
   function electNode(context, node, outputNum, ReElectionBan) {
