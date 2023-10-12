@@ -57,27 +57,34 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
     let node = this;
     let context = this.context();
-
-    // Assume these are arrays for each output
-    const StartCommands = config.startCommand;
-    const EndCommands = config.endCommand;
-    const TimerDurations = config.timerDuration.map(duration => duration * 1000);  // Convert to milliseconds
-
-
+  
+    // Validate and initialize timer durations
+    let TimerDurations;
+    if (Array.isArray(config.timerDuration)) {
+      TimerDurations = config.timerDuration.map(duration => duration * 1000); // Convert to milliseconds
+    } else {
+      node.error("Invalid timerDuration: Expected an array");
+      return;
+    }
+  
+    // Validate start and end commands
+    const StartCommands = Array.isArray(config.startCommand) ? config.startCommand : [];
+    const EndCommands = Array.isArray(config.endCommand) ? config.endCommand : [];
+  
     // Initialize context variables if they are undefined
     context.set("lastElectedNode", context.get("lastElectedNode") || "");
-
-
+  
     const ReElectionBan = config.reelectionBan * 1000;
     const ElectionTime = config.electionTime * 1000;
     const numberOfOutputs = Math.min(config.outputs - 1, 300); // Limit to 300 outputs
-
+  
     node.on("input", function (msg) {
-      // Your existing logic here
       let output = new Array(numberOfOutputs + 1);
       let chosen;
+  
       if (context.get("lastElectedNode") !== "" && context.get("lastElectedNode") !== undefined) {
         chosen = context.get("lastElectedNode");
+  
         if (context.get("lastElectedTime" + chosen) > Date.now() - ElectionTime &&
           context.get("lastElectedTime" + chosen) !== undefined) {
           chosen = context.get("lastElectedNode");
@@ -86,12 +93,14 @@ module.exports = function (RED) {
         } else {
           node.log("node-red-contrib: Election has expired");
           let restartOutputNode;
+  
           if (context.get("lastElectedNode") + 1 > numberOfOutputs) {
             restartOutputNode = 0;
           } else {
             restartOutputNode = context.get("lastElectedNode") + 1;
           }
-          if (electNode(context, node, restartOutputNode, ReElectionBan) == true) {
+  
+          if (electNode(context, node, restartOutputNode, ReElectionBan) === true) {
             chosen = context.get("lastElectedNode");
             output[chosen] = msg;
             node.send(output);
@@ -103,21 +112,28 @@ module.exports = function (RED) {
       } else {
         for (let outputNum = 0; outputNum <= numberOfOutputs; outputNum++) {
           chosen = outputNum;
-          if (electNode(context, node, chosen, ReElectionBan) == true) {
+          
+          if (electNode(context, node, chosen, ReElectionBan) === true) {
             node.log("node-red-contrib: Elected node " + chosen);
             break;
           } else {
             node.log("node-red-contrib: Node " + chosen + " is banned");
           }
         }
+  
         chosen = context.get("lastElectedNode");
         output[chosen] = msg;
         node.send(output);
       }
-
-      startTimer(context, node, chosen, TimerDurations[chosen], StartCommands[chosen], EndCommands[chosen]);
+  
+      if (StartCommands[chosen] && EndCommands[chosen] && TimerDurations[chosen]) {
+        startTimer(context, node, chosen, TimerDurations[chosen], StartCommands[chosen], EndCommands[chosen]);
+      } else {
+        node.error(`Invalid timer or command configuration for output ${chosen}`);
+      }
     });
   }
+  
   
   RED.nodes.registerType("random-output-advanced", RandomOutputNode);
 };
