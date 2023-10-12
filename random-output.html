@@ -3,7 +3,14 @@
     category: "function",
     color: "#E2D96E",
     defaults: {
-      endCommand: { value: "" },
+      endCommand: { value: "", validate: function(v) {
+        try {
+          JSON.parse(v);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }},
       timerDuration: { value: 0 },
       name: { value: "" },
       outputs: { value: 1, validate: RED.validators.number() },
@@ -23,6 +30,14 @@
       $("#node-input-useWeights").change((e) => {
         if (e.target.checked) $(".node-weights-field").show();
         else $(".node-weights-field").hide();
+      });
+      $("#node-input-endCommand").on('input', function() {
+        try {
+          JSON.parse($(this).val());
+          $(this).removeClass('input-error');
+        } catch (e) {
+          $(this).addClass('input-error');
+        }
       });
     },
   });

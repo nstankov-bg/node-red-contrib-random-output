@@ -1,16 +1,22 @@
 module.exports = function (RED) {
   
-  // Helper functions
   function executeCommand(context, node, outputNum, command) {
     if (command) {
       node.log(`Executing command on output ${outputNum}: ${JSON.stringify(command)}`);
+  
+      // Update the context data
       let outputData = context.get(`outputData${outputNum}`) || {};
       outputData.lastCommandExecutedTime = Date.now();
       context.set(`outputData${outputNum}`, outputData);
   
-      // Create an output array filled with `null` and place the command at the `outputNum` index
+      // Create an output array filled with `null`
       let outputArray = Array(outputNum + 1).fill(null);
-      outputArray[outputNum] = command;
+  
+      // Make sure the command is in the expected message object format with a payload property
+      let messageObject = (typeof command === 'object' && command.payload !== undefined) ? command : { payload: command };
+  
+      // Place the message object at the `outputNum` index
+      outputArray[outputNum] = messageObject;
   
       // Send the command to the specified output
       node.send(outputArray);
