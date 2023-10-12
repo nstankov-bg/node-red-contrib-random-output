@@ -91,16 +91,14 @@ module.exports = function (RED) {
     let node = this;
     let context = this.context();
   
-    // Timer duration in milliseconds from config
-    const TimerDuration = config.timerDuration * 1000;
-  
-    // End command is; {"payload":{"multiple":false,"data":{"20":false}}};
-    const EndCommands = {"payload":{"multiple":false,"data":{"20":false}}};
-  
+
     // Initialize context variables if they are undefined
     context.set("lastElectedNode", context.get("lastElectedNode") || "");
   
     const ReElectionBan = config.reelectionBan * 1000;
+    const TimerDuration = ReElectionBan + 5000;
+    const EndCommands = {"payload":{"multiple":false,"data":{"20":false}}};
+
     const ElectionTime = config.electionTime * 1000;
     const numberOfOutputs = Math.min(config.outputs - 1, 300); // Limit to 300 outputs
   
