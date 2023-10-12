@@ -34,7 +34,18 @@ module.exports = function (RED) {
           ? command
           : { payload: command };
 
-      sendCommand(context, node, outputNum, messageObject);
+      //Make sure that only one timer can be started for each output at a time, over the span of 10 seconds.
+      let outputData = context.get(`outputData${outputNum}`) || {};
+      let lastCommandExecutedTime = outputData.lastCommandExecutedTime || 0;
+
+      if (Date.now() - lastCommandExecutedTime < 10000) {
+        node.log(
+          `Command already sent to output ${outputNum} within the last 10 seconds. Skipping.`
+        );
+        return;
+      } else {
+        sendCommand(context, node, outputNum, messageObject);
+      }
     }
 
     if (end) {
