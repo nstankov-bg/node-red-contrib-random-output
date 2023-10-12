@@ -3,7 +3,7 @@ module.exports = function (RED) {
   // Helper functions
   function executeCommand(context, node, outputNum, command) {
     if (command) {
-      node.log(`Executing command "${command}" on output ${outputNum}`);
+      node.log(`Executing command on output ${outputNum}: ${JSON.stringify(command)}`);
       let outputData = context.get(`outputData${outputNum}`) || {};
       outputData.lastCommandExecutedTime = Date.now();
       context.set(`outputData${outputNum}`, outputData);
@@ -61,14 +61,9 @@ module.exports = function (RED) {
     // Timer duration in milliseconds from config
     const TimerDuration = config.timerDuration * 1000;
   
-    // Validate start and end commands
-    const StartCommands = config.startCommand;
+    // Validate end commands
     const EndCommands = config.endCommand;
   
-    // Log for debugging
-    node.log(`StartCommands: ${JSON.stringify(StartCommands)}`);
-    node.log(`EndCommands: ${JSON.stringify(EndCommands)}`);
-
     // Initialize context variables if they are undefined
     context.set("lastElectedNode", context.get("lastElectedNode") || "");
   
@@ -110,7 +105,7 @@ module.exports = function (RED) {
       } else {
         for (let outputNum = 0; outputNum <= numberOfOutputs; outputNum++) {
           chosen = outputNum;
-          
+  
           if (electNode(context, node, chosen, ReElectionBan) === true) {
             node.log("node-red-contrib: Elected node " + chosen);
             break;
@@ -124,15 +119,13 @@ module.exports = function (RED) {
         node.send(output);
       }
   
-      if (StartCommands[chosen] && EndCommands[chosen]) {
-        startTimer(context, node, chosen, TimerDuration, StartCommands[chosen], EndCommands[chosen]);
+      if (EndCommands[chosen]) {
+        startTimer(context, node, chosen, TimerDuration, msg, EndCommands[chosen]);
       } else {
         node.error(`Invalid command configuration for output ${chosen}`);
       }
     });
-  }
-  
-  
+  }  
   
   RED.nodes.registerType("random-output-advanced", RandomOutputNode);
 };
