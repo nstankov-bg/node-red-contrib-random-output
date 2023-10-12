@@ -16,14 +16,15 @@ module.exports = function (RED) {
   
     // Place the message object at the `outputNum` index
     outputArray[outputNum] = commandObject;
-  
+    node.log(`Sending command to output ${outputNum}: ${JSON.stringify(commandObject)}`);
     // Send the command to the specified output
     node.send(outputArray);
   }
   
   function executeCommand(context, node, outputNum, command, end=false) {
     if (command) {
-      node.log(`Executing command on output ${outputNum}: ${JSON.stringify(command)}`);
+      
+      node.log("Timer started for output " + outputNum + ". Executing start command.")
   
       // Make sure the command is in the expected message object format with a payload property
       let messageObject = (typeof command === 'object' && command.payload !== undefined) ? command : { payload: command };
@@ -32,10 +33,10 @@ module.exports = function (RED) {
     }
   
     if (end) {
-      node.log(`Executing end command on output ${outputNum}: ${JSON.stringify(end)}`);
-  
       // Define the end command as a JSON object
       let endCommandObject = {"payload":{"multiple":false,"data":{"20":false}}};
+
+      node.log("Timer expired for output " + outputNum + ". Executing end command.")
   
       sendCommand(context, node, outputNum, endCommandObject);
     }
