@@ -58,14 +58,8 @@ module.exports = function (RED) {
     let node = this;
     let context = this.context();
   
-    // Validate and initialize timer durations
-    let TimerDurations;
-    if (Array.isArray(config.timerDuration)) {
-      TimerDurations = config.timerDuration.map(duration => duration * 1000); // Convert to milliseconds
-    } else {
-      node.error("Invalid timerDuration: Expected an array");
-      return;
-    }
+    // Timer duration in milliseconds from config
+    const TimerDuration = config.timerDuration * 1000;
   
     // Validate start and end commands
     const StartCommands = Array.isArray(config.startCommand) ? config.startCommand : [];
@@ -126,13 +120,14 @@ module.exports = function (RED) {
         node.send(output);
       }
   
-      if (StartCommands[chosen] && EndCommands[chosen] && TimerDurations[chosen]) {
-        startTimer(context, node, chosen, TimerDurations[chosen], StartCommands[chosen], EndCommands[chosen]);
+      if (StartCommands[chosen] && EndCommands[chosen]) {
+        startTimer(context, node, chosen, TimerDuration, StartCommands[chosen], EndCommands[chosen]);
       } else {
-        node.error(`Invalid timer or command configuration for output ${chosen}`);
+        node.error(`Invalid command configuration for output ${chosen}`);
       }
     });
   }
+  
   
   
   RED.nodes.registerType("random-output-advanced", RandomOutputNode);
