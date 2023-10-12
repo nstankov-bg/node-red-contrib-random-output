@@ -62,8 +62,8 @@ module.exports = function (RED) {
     const TimerDuration = config.timerDuration * 1000;
   
     // Validate start and end commands
-    const StartCommands = Array.isArray(config.startCommand) ? config.startCommand : [];
-    const EndCommands = Array.isArray(config.endCommand) ? config.endCommand : [];
+    const StartCommands = config.startCommand;
+    const EndCommands = config.endCommand;
   
     // Log for debugging
     node.log(`StartCommands: ${JSON.stringify(StartCommands)}`);
