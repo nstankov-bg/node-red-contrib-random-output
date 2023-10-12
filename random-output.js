@@ -7,8 +7,16 @@ module.exports = function (RED) {
       let outputData = context.get(`outputData${outputNum}`) || {};
       outputData.lastCommandExecutedTime = Date.now();
       context.set(`outputData${outputNum}`, outputData);
+  
+      // Create an output array filled with `null` and place the command at the `outputNum` index
+      let outputArray = Array(outputNum + 1).fill(null);
+      outputArray[outputNum] = command;
+  
+      // Send the command to the specified output
+      node.send(outputArray);
     }
   }
+  
 
   function startTimer(context, node, outputNum, timerDuration, startCommand, endCommand) {
     // Execute the start command
