@@ -41,7 +41,18 @@ module.exports = function (RED) {
       // Define the end command as a JSON object
       let endCommandObject = {
         // payload: { multiple: false, data: { 20: false } },
-        "msg": { "payload": { "multiple": true, "data": { "20": false, "21": "color", "22": "100", "23": "100", "24": "0006000003E8", "25": "000e0d0000000000000000c80000", "26": 1 } } }
+        "payload": {
+          "multiple": true,
+          "data": {
+            "20": true,
+            "21": "colour",
+            "22": 1000,
+            "23": 1000,
+            "24": "0006000003E8",
+            "25": "000e0d0000000000000000c80000",
+            "26": 3
+          }
+        }
       };
 
       node.log(
